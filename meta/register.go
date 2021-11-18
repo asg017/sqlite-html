@@ -15,14 +15,14 @@ type RegisterParams struct {
 func buildFunctions(params RegisterParams) []internal.Function {
 	return []internal.Function{
 		{
-			Name:       "http_version",
+			Name:       "html_version",
 			Definition: &HtmlVersionFunc{version: params.Version},
 			Documentation: map[string]string{
 				"description": "",
 			},
 		},
 		{
-			Name:       "http_debug",
+			Name:       "html_debug",
 			Definition: &HtmlDebugFunc{version: params.Version, date: params.Date, commit: params.Commit},
 			Documentation: map[string]string{
 				"description": "",

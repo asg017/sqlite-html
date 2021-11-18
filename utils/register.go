@@ -29,7 +29,7 @@ var Funcs = []internal.Function{
 	},
 	{
 		Name:       "html_trim",
-		Definition: &HtmlTableFunc{},
+		Definition: &HtmlTrimFunc{},
 		Documentation: map[string]string{
 			"description": "HtmlTrimFunc",
 		},
