@@ -6,9 +6,11 @@ github.com/augmentable-dev/vtab v0.0.0-20210818144031-5c7659b723dd h1:uX6G/fS/0v
 github.com/augmentable-dev/vtab v0.0.0-20210818144031-5c7659b723dd/go.mod h1:nW8zI//bDNKyXrKJgzdezNl3XzWYsBHm3JBaxB/ZTSU=
 github.com/mattn/go-pointer v0.0.1 h1:n+XhsuGeVO6MEAp7xyEukFINEa+Quek5psIR/ylA6o0=
 github.com/mattn/go-pointer v0.0.1/go.mod h1:2zXcozF6qYGgmsG+SeTZz3oAbFLdD3OWqnUbNvJZAlc=
+github.com/mattn/go-sqlite3 v1.14.6 h1:dNPt6NO46WmLVt2DLNpwczCmdV5boIZ6g/tlDrlRUbg=
 github.com/mattn/go-sqlite3 v1.14.6/go.mod h1:NyWgC/yNuGj7Q9rpYnZvas74GogHl5/Z4A/KQRfk6bU=
-go.riyazali.net/sqlite v0.0.0-20210707161919-414349b4032a h1:OMc4dyudGBBW5u4zTpD97FG2fUHxlCiRPfr0r4BuEzI=
 go.riyazali.net/sqlite v0.0.0-20210707161919-414349b4032a/go.mod h1:UVocl0mLwS0QKUKa5mI6lppmBjvQnUEkFjFfoWqFWQU=
+go.riyazali.net/sqlite v0.0.0-20211025103955-e79f04eecc1d h1:HhEfGg/4d7UwyxJtc4QoqsSovIMhwQQy2hzdMiN/YO8=
+go.riyazali.net/sqlite v0.0.0-20211025103955-e79f04eecc1d/go.mod h1:UVocl0mLwS0QKUKa5mI6lppmBjvQnUEkFjFfoWqFWQU=
 golang.org/x/net v0.0.0-20180218175443-cbe0f9307d01/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 golang.org/x/net v0.0.0-20210614182718-04defd469f4e h1:XpT3nA5TvE525Ne3hInMh6+GETgn27Zfm9dxsThnX2Q=
 golang.org/x/net v0.0.0-20210614182718-04defd469f4e/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=

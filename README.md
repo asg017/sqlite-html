@@ -1,20 +1,165 @@
-# sqlite-dom
+# sqlite-html
+
+A SQLite extension for querying, manipulating, and creating HTML elements.
+
+- Extract HTML or text from HTML with CSS selectors, like `.querySelector()`, `.innerHTML`, and `.innerText`
+- Generate a table of matching elements from a CSS selector, like `.querySelectorAll()`
+- Safely create HTML elements in a query, like `.createElement()` and `.appendChild()`
+
+## ⚠️⚠️WARNING⚠️⚠️
+
+This extension is very new and in beta! The API is not stable and should be used with caution. Eventually I'll come up with a roadmap for a stable `v1`, but for now expect breakages in the future.
+
+## Installing
+
+TODO
 
 ## Overview
 
+`sqlite-html`'s API is modeled after the official [JSON1](https://www.sqlite.org/json1.html#jmini) SQLite extension. This extension is also written in Go, thanks to [riyaz-ali/sqlite](https://github.com/riyaz-ali/sqlite). While this library aims to be fast and efficient, it is overall slower than what a pure C SQLite extension could be (mostly because cgo is slow), but in practice you probably won't notice much of a difference.
+
+## API Reference
+
 Scalar functions:
 
-- [dom_all](#dom_all)(_html, selector_)
-- [dom_extract](#dom_extract)(_html, selector_)
-- [dom_text](#dom_test)(_html, selector_)
-- [dom_count](#dom_count)(_html, selector_)
-- [dom_trim](#dom_trim)(_text_)
-- [dom_table](#dom_-)(_html_)
-- [dom_attr_get](#dom_attr_get)(_html, selector, attribute_)
+- [html](#html)(_document_)
+- [html_element](#html_element)(_tag, attributes, child1, ..._)
+- [html_extract](#html_extract)(_document, selector_)
+- [html_text](#html_text)(_document, selector_)
+- [html_attr_get](#html_attr_get)(_document, selector, attribute_)
+- [html_attr_has](#html_attr_has)(_document, selector, attribute_)
+- [html_count](#html_count)(_document, selector_)
+- [html_table](#html_table)(_document_)
+- [html_escape](#html_escape)(_text_)
+- [html_unescape](#html_unescape)(_text_)
+- [html_trim](#html_trim)(_text_)
+- [html_version](#html_version)()
+- [html_debug](#html_debug)()
 
-Table-valued functions:
+Table functions:
 
-- [dom\_$$](#dom_--)(_html, selector_)
+- [html_each](#html_each)(_document, selector_)
+
+## Functions
+
+<h3>The <code><a id="html">html()</a></code> Function </h3>
+
+html(_document_)
+
+Examples:
+
+- `select html("<p class=x>yo");` → `"<p class="x">yo</p>"`
+- `select html("<a>");` → `"<a></a>"`
+
+<h3>The <code><a id="html_element">html_element()</a></code> Function </h3>
+
+html_element(_\_tag, attributes, child1, ..._)
+
+Examples:
+
+```sql
+select html_element("p", json_object("class", "greetings"), "hello!");
+-- "<p class="greetings">hello!</p>"
+
+select html_element("p", null, "hello! <script></script>")
+-- "<p>hello! &lt;script&gt;&lt;/script&gt;</p>"
+
+select html_element("p", null,
+  "hello, ",
+  html_element("span", null, "Alex"),
+  "!"
+)
+-- '<p>hello, <span>Alex</span>!</p>'
+
+```
+
+<h3>The <code><a id="html_extract">html_extract()</a></code> Function </h3>
+
+html*extract(\_document, selector*)
+
+Examples:
+
+- `html_extract()` → `""`
+
+<h3>The <code><a id="html_text">html_text()</a></code> Function </h3>
+
+html*text(\_document, selector*)
+
+Examples:
+
+- `html_text()` → `""`
+
+<h3>The <code><a id="html_attr_get">html_attr_get()</a></code> Function </h3>
+
+html*attr_get(\_document, selector, attribute*)
+
+Examples:
+
+- `html_attr_get()` → `""`
+
+<h3>The <code><a id="html_attr_has">html_attr_has()</a></code> Function </h3>
+
+html*attr_has(\_document, selector, attribute*)
+
+Examples:
+
+- `html_attr_has()` → `""`
+
+<h3>The <code><a id="html_count">html_count()</a></code> Function </h3>
+
+html*count(\_document, selector*)
+
+Examples:
+
+- `html_count()` → `""`
+
+<h3>The <code><a id="html_table">html_table()</a></code> Function </h3>
+
+html*table(\_document*)
+
+Examples:
+
+- `html_table()` → `""`
+
+<h3>The <code><a id="html_escape">html_escape()</a></code> Function </h3>
+
+html*escape(\_text*)
+
+Examples:
+
+- `html_escape()` → `""`
+
+<h3>The <code><a id="html_unescape">html_unescape()</a></code> Function </h3>
+
+html*unescape(\_text*)
+
+Examples:
+
+- `html_unescape()` → `""`
+
+<h3>The <code><a id="html_trim">html_trim()</a></code> Function </h3>
+
+html*trim(\_text*)
+
+Examples:
+
+- `html_trim()` → `""`
+
+<h3>The <code><a id="html_version">html_version()</a></code> Function </h3>
+
+html_version()
+
+Examples:
+
+- `html_version()` → `""`
+
+<h3>The <code><a id="html_debug">html_debug()</a></code> Function </h3>
+
+html_debug()
+
+Examples:
+
+- `html_debug()` → `""`
 
 ## Interface Overview
 
@@ -22,76 +167,46 @@ selector meaning
 
 ## Function Details
 
-### The `dom_$$()` table-vauled function
+### The `html_$$()` table-vauled function
 
-### The `dom_$()` function
-
-X
-
-Examples:
-
-- `dom_$()` ➡ `''`
-
-### The `dom_$text()` function
+### The `html_$()` function
 
 X
 
 Examples:
 
-- `dom_$text()` ➡ `''`
+- `html_$()` ➡ `''`
 
-### The `dom_trim()` function
-
-X
-
-Examples:
-
-- `dom_trim(' abc ')` ➡ `'abc'`
-- `dom_trim('\n\n abc \n\t\t')` ➡ `'abc'`
-- `dom_trim('abc')` ➡ `'abc'`
-
-### The `dom_table()` function
+### The `html_$text()` function
 
 X
 
 Examples:
 
-- `dom_table('<tr><td>Alex</td>')` ➡ `'<table> <tr><td>Alex</td></tr>'`
+- `html_$text()` ➡ `''`
 
-### The `dom_attr_get()` function
+### The `html_trim()` function
 
 X
 
 Examples:
 
-- `dom_attr_get('<a href="https://observablehq.com/@asg017">', 'a', 'href')` ➡ `'https://observablehq.com/@asg017'`
+- `html_trim(' abc ')` ➡ `'abc'`
+- `html_trim('\n\n abc \n\t\t')` ➡ `'abc'`
+- `html_trim('abc')` ➡ `'abc'`
 
-## TODO/Roadmap
+### The `html_table()` function
 
-### Classes
+X
 
-- [ ] `dom_classes_get(doc, selector)`
-- [ ] `dom_class_has(doc, selector, classname)`
-- [ ] `dom_class_remove(doc, selector, classname)`
+Examples:
 
-### "Manipulation" Functions
+- `html_table('<tr><td>Alex</td>')` ➡ `'<table> <tr><td>Alex</td></tr>'`
 
-- [ ] `dom_attr_set(doc, selector, name, value)`
-- [ ] `dom_attr_remove()`
+### The `html_attr_get()` function
 
-- [ ] `dom_append(doc, selector, value)`
-- [ ] `dom_append_all(doc, selector, value)`
-- [ ] `dom_replace(doc, selector, value)`
-- [ ] `dom_replace_all(doc, selector, value)`
-- [ ] `dom_set(doc, selector, value)`
-- [ ] `dom_set_all(doc, selector, value)`
-- [ ] `dom_remove(doc, selector)`
-- [ ] `dom_remove_all(doc, selector)`
+X
 
-### DOM creation
+Examples:
 
-Only when `subtype` is supported, simiar to json1.
-
-- [ ] `dom_element(name, attrs, ...children)`
-- [ ] `dom_attrs(name1, value1, name2, value2, ....)`
-
+- `html_attr_get('<a href="https://observablehq.com/@asg017">', 'a', 'href')` ➡ `'https://observablehq.com/@asg017'`
