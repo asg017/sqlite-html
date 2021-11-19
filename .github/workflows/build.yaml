@@ -1,0 +1,11 @@
+on: [push]
+name: "build"
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    name: ""
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+      - run: make all
+      - run: make test
