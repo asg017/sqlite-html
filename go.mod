@@ -1,4 +1,4 @@
-module github.com/asg017/sqlite-dom
+module github.com/asg017/sqlite-html
 
 go 1.17
 

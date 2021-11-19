@@ -8,13 +8,12 @@ dist/html0.so:  $(shell find . -type f -name '*.go')
 	-ldflags '-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.Date=$(DATE)' \
 	-o $@  shared.go
 
-
 all: dist/html0.so
 
 test:
-	./test.sh 
+	python3 test.py
 
 format:
 	gofmt -s -w .
 
-.PHONY: httpbin all test format
+.PHONY: all test format

@@ -1,11 +1,11 @@
 package main
 
 import (
-	attrs "github.com/asg017/sqlite-dom/attrs"
-	elements "github.com/asg017/sqlite-dom/elements"
-	meta "github.com/asg017/sqlite-dom/meta"
-	query "github.com/asg017/sqlite-dom/query"
-	utils "github.com/asg017/sqlite-dom/utils"
+	attrs "github.com/asg017/sqlite-html/attrs"
+	elements "github.com/asg017/sqlite-html/elements"
+	meta "github.com/asg017/sqlite-html/meta"
+	query "github.com/asg017/sqlite-html/query"
+	utils "github.com/asg017/sqlite-html/utils"
 	"go.riyazali.net/sqlite"
 )
 

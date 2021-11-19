@@ -1,7 +1,7 @@
 package meta
 
 import (
-	"github.com/asg017/sqlite-dom/internal"
+	"github.com/asg017/sqlite-html/internal"
 	"github.com/augmentable-dev/vtab"
 	"go.riyazali.net/sqlite"
 )

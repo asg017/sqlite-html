@@ -109,9 +109,6 @@ func (cur *HtmlEachCursor) Column(ctx *sqlite.Context, c int) error {
 		}
 	case "text":
 		ctx.ResultText(cur.children.Eq(cur.current).Text())
-	case "length":
-		ctx.ResultInt(cur.children.Eq(cur.current).Length())
-
 	}
 	return nil
 }
@@ -131,7 +128,6 @@ var HtmlEachColumns = []vtab.Column{
 	{Name: "i", Type: sqlite.SQLITE_INTEGER.String()},
 	{Name: "html", Type: sqlite.SQLITE_TEXT.String()},
 	{Name: "text", Type: sqlite.SQLITE_TEXT.String()},
-	{Name: "length", Type: sqlite.SQLITE_INTEGER.String()},
 }
 
 func HtmlEachIterator(constraints []*vtab.Constraint, order []*sqlite.OrderBy) (vtab.Iterator, error) {

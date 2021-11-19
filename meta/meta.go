@@ -6,11 +6,11 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/asg017/sqlite-dom/attrs"
-	"github.com/asg017/sqlite-dom/elements"
-	"github.com/asg017/sqlite-dom/internal"
-	"github.com/asg017/sqlite-dom/query"
-	"github.com/asg017/sqlite-dom/utils"
+	"github.com/asg017/sqlite-html/attrs"
+	"github.com/asg017/sqlite-html/elements"
+	"github.com/asg017/sqlite-html/internal"
+	"github.com/asg017/sqlite-html/query"
+	"github.com/asg017/sqlite-html/utils"
 	"github.com/augmentable-dev/vtab"
 	"go.riyazali.net/sqlite"
 )

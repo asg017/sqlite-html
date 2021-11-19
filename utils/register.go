@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/asg017/sqlite-dom/internal"
+	"github.com/asg017/sqlite-html/internal"
 	"go.riyazali.net/sqlite"
 )
 
