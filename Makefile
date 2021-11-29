@@ -22,7 +22,7 @@ macos: dist/html0-macos.dylib
 
 linux: dist/html0-linux.so
 
-windows: dist/html0-linux.dll
+windows: dist/html0-windows.dll
 
 #dist/html0-linux-arm.so: 
 #	go build -buildmode=c-shared -tags="shared" \

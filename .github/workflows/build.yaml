@@ -28,7 +28,7 @@ jobs:
         run: |
           make macos
           make test
-      - name: Build for linux
+      - name: Build for windows
         if: matrix.os == 'windows-latest'
         env:
           OS: windows
@@ -38,5 +38,5 @@ jobs:
       - name: distribution
         uses: actions/upload-artifact@v2
         with:
-          name: dist
+          name: dist-${{matrix.os}}
           path: dist
