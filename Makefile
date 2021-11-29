@@ -3,6 +3,13 @@ COMMIT=$(shell git rev-parse HEAD)
 VERSION=v0.0.0
 DATE=$(shell date +'%FT%TZ%z')
 
+
+# from riyaz-ali/sqlite
+export CGO_LDFLAGS = -Wl,--unresolved-symbols=ignore-in-object-files
+ifeq ($(shell uname -s),Darwin)
+	export CGO_LDFLAGS = -Wl,-undefined,dynamic_lookup
+endif
+
 dist/html0-macos.dylib:  $(shell find . -type f -name '*.go')
 	go build -buildmode=c-shared -tags="shared" \
 	-ldflags '-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.Date=$(DATE)' \
