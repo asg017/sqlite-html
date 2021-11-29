@@ -1,5 +1,8 @@
 import sqlite3
 import unittest
+import os
+
+EXT_PATH = "dist/html0-{OS}".format(OS=os.environ.get("OS"))
 
 db = sqlite3.connect(":memory:")
 
@@ -7,7 +10,7 @@ db.execute("create table fbefore as select name from pragma_function_list")
 db.execute("create table mbefore as select name from pragma_module_list")
 
 db.enable_load_extension(True)
-db.load_extension("dist/html0.so")
+db.load_extension("dist/html0-macos")
 
 db.execute("create temp table fafter as select name from pragma_function_list")
 db.execute("create temp table mafter as select name from pragma_module_list")
