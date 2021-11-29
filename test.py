@@ -10,7 +10,7 @@ db.execute("create table fbefore as select name from pragma_function_list")
 db.execute("create table mbefore as select name from pragma_module_list")
 
 db.enable_load_extension(True)
-db.load_extension("dist/html0-macos")
+db.load_extension(EXT_PATH)
 
 db.execute("create temp table fafter as select name from pragma_function_list")
 db.execute("create temp table mafter as select name from pragma_module_list")

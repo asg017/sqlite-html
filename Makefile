@@ -64,7 +64,7 @@ windows: dist/html0-linux.dll
 #all: dist/html0-macos.so
 
 test:
-	OS=macos; python3 test.py
+	 python3 test.py
 
 format:
 	gofmt -s -w .
