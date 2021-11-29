@@ -8,7 +8,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-          - os: windows-latest
+          - os: windows-2022
           #- os: macos-latest
 
     steps:
@@ -29,7 +29,7 @@ jobs:
           make macos
           make test
       - name: Build for windows
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-2022'
         env:
           OS: windows
         run: |
