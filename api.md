@@ -36,30 +36,73 @@ As a reminder, `sqlite-html` is still young, so breaking changes should be expec
 CREATE TABLE html_each(
   i INTEGER,  -- index of the html element, starting at 0
   html TEXT,  -- HTML of the extracted element
-  text TEXT,  -- textContent of the HTML element
-  length INT  -- length of the HTML element (TODO rm?)
+  text TEXT  -- textContent of the HTML element
 );
 ```
 
-The `i` column
+The `i` column contains the index (starts at 0) of the matching element.
 
-The `html` column
+The `html` column contains the matching element's HTML representation.
 
-The `text` column
+The `text` column contains the matching element's textContent representation, similar to the JavaScript DOM API's `.textContent` or the `html_text` function found in this library.
 
-The `length` column
+Examples:
+
+```sql
+
+```
 
 #### `html_extract`
 
+`html_extract(document, selector)`
+
+Extracts the first matching element from `document` using the given CSS `selector`, and returns the full HTML representation of that element.
+
+Examples:
+
+```sql
+sqlite> select html_extract("<p> Hello, <b class=x>world!</b> </p>", "b");
+<b class="x">world!</b>
+
+```
+
 #### `html_text`
 
+`html_text(document, selector)`
+
+Extracts the first matching element from `document` using the given CSS `selector`, and returns the text representation of that element, Similar to the [`Node.textContent`](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent) property in the JavaScript DOM API.
+
+Examples:
+
+```sql
+sqlite> select
+```
+
 #### `html_count`
+
+Examples:
+
+```sql
+sqlite> select
+```
 
 ### Generate HTML Elements
 
 #### `html`
 
+Examples:
+
+```sql
+sqlite> select
+```
+
 #### `html_element`
+
+Examples:
+
+```sql
+sqlite> select
+```
 
 ### HTML Attributes
 
@@ -67,17 +110,47 @@ The `length` column
 
 Alias: `html_attr_get`
 
+Examples:
+
+```sql
+sqlite> select
+```
+
 #### `html_attribute_has`
 
 Alias: `html_attr_has`
+
+Examples:
+
+```sql
+sqlite> select
+```
 
 ### HTML Utilities
 
 #### `html_table`
 
+Examples:
+
+```sql
+sqlite> select
+```
+
 #### `html_escape`
 
+Examples:
+
+```sql
+sqlite> select
+```
+
 #### `html_unescape`
+
+Examples:
+
+```sql
+sqlite> select
+```
 
 #### `html_trim`
 
@@ -96,6 +169,8 @@ empty space
 
 Returns the version string of the `sqlite-html` library, modeled after [`sqlite_version()`](https://www.sqlite.org/lang_corefunc.html#sqlite_version).
 
+Examples:
+
 ```sql
 sqlite> select html_version();
 v0.0.0
@@ -105,6 +180,8 @@ v0.0.0
 
 Returns debug information of the `sqlite-html` library, including the version string. Subject to change.
 
+Examples:
+
 ```sql
 sqlite> select html_debug();
 Version: v0.0.0
@@ -112,142 +189,3 @@ Commit: 0cd144a880b47f4a57a5c7f8ceb96eb9dc821508
 Runtime: go1.17 darwin/amd64
 Date: 2021-11-17T17:06:12Z-0800
 ```
-
-<h3>The <code><a id="html">html()</a></code> Function </h3>
-
-html(_document_)
-
-Examples:
-
-- `select html("<p class=x>yo");` → `"<p class="x">yo</p>"`
-- `select html("<a>");` → `"<a></a>"`
-
-<h3>The <code><a id="html_element">html_element()</a></code> Function </h3>
-
-html*element(*\_tag, attributes, child1, ...\_)
-
-Examples:
-
-```sql
-select html_element("p", json_object("class", "greetings"), "hello!");
--- "<p class="greetings">hello!</p>"
-
-select html_element("p", null, "hello! <script></script>")
--- "<p>hello! &lt;script&gt;&lt;/script&gt;</p>"
-
-select html_element("p", null,
-  "hello, ",
-  html_element("span", null, "Alex"),
-  "!"
-)
--- '<p>hello, <span>Alex</span>!</p>'
-
-```
-
-<h3>The <code><a id="html_extract">html_extract()</a></code> Function </h3>
-
-html*extract(\_document, selector*)
-
-Examples:
-
-- `html_extract()` → `""`
-
-<h3>The <code><a id="html_text">html_text()</a></code> Function </h3>
-
-html*text(\_document, selector*)
-
-Examples:
-
-- `html_text()` → `""`
-
-<h3>The <code><a id="html_attr_get">html_attr_get()</a></code> Function </h3>
-
-html*attr_get(\_document, selector, attribute*)
-
-Examples:
-
-- `html_attr_get()` → `""`
-
-<h3>The <code><a id="html_attr_has">html_attr_has()</a></code> Function </h3>
-
-html*attr_has(\_document, selector, attribute*)
-
-Examples:
-
-- `html_attr_has()` → `""`
-
-<h3>The <code><a id="html_count">html_count()</a></code> Function </h3>
-
-html*count(\_document, selector*)
-
-Examples:
-
-- `html_count()` → `""`
-
-<h3>The <code><a id="html_table">html_table()</a></code> Function </h3>
-
-html*table(\_document*)
-
-Examples:
-
-- `html_table()` → `""`
-
-<h3>The <code><a id="html_escape">html_escape()</a></code> Function </h3>
-
-html*escape(\_text*)
-
-Examples:
-
-- `html_escape()` → `""`
-
-<h3>The <code><a id="html_unescape">html_unescape()</a></code> Function </h3>
-
-html*unescape(\_text*)
-
-Examples:
-
-- `html_unescape()` → `""`
-
-<h3>The <code><a id="html_trim">html_trim()</a></code> Function </h3>
-
-html*trim(\_text*)
-
-Examples:
-
-- `html_trim()` → `""`
-
-<h3>The <code><a id="html_version">html_version()</a></code> Function </h3>
-
-html_version()
-
-Examples:
-
-- `html_version()` → `""`
-
-<h3>The <code><a id="html_debug">html_debug()</a></code> Function </h3>
-
-html_debug()
-
-Examples:
-
-- `html_debug()` → `""`
-
-## Interface Overview
-
-selector meaning
-
-### The `html_table()` function
-
-X
-
-Examples:
-
-- `html_table('<tr><td>Alex</td>')` ➡ `'<table> <tr><td>Alex</td></tr>'`
-
-### The `html_attr_get()` function
-
-X
-
-Examples:
-
-- `html_attr_get('<a href="https://observablehq.com/@asg017">', 'a', 'href')` ➡ `'https://observablehq.com/@asg017'`

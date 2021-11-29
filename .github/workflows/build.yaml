@@ -9,7 +9,7 @@ jobs:
         include:
           - os: ubuntu-latest
           - os: windows-2022
-          #- os: macos-latest
+          - os: macos-11
 
     steps:
       - uses: actions/checkout@v2
@@ -22,7 +22,7 @@ jobs:
           make linux
           make test
       - name: Build for macos
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-11'
         env:
           OS: macos
         run: |
