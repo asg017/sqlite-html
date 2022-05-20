@@ -15,9 +15,11 @@ CONFIG_DARWIN=y
 else
 CONFIG_LINUX=y
 endif
-                                                                                
+
+# framework stuff is needed bc https://github.com/golang/go/issues/42459#issuecomment-896089738                                                                           
 ifdef CONFIG_DARWIN
 LOADABLE_EXTENSION=dylib
+SQLITE3_CFLAGS=-framework CoreFoundation -framework Security
 endif
 
 ifdef CONFIG_LINUX
@@ -49,10 +51,10 @@ $(TARGET_OBJ):  $(shell find . -type f -name '*.go')
 	$(GO_BUILD_LDFLAGS) \
 	-o $@ shared.go
 
-# framework stuff is needed bc https://github.com/golang/go/issues/42459#issuecomment-896089738
+
 $(TARGET_SQLITE3): $(TARGET_OBJ) dist/sqlite3-extra.c sqlite/shell.c
 	gcc \
-	-framework CoreFoundation -framework Security \
+	$(SQLITE3_CFLAGS) \
 	dist/sqlite3-extra.c sqlite/shell.c $(TARGET_OBJ) \
 	-L. -I./ \
 	-DSQLITE_EXTRA_INIT=core_init \
