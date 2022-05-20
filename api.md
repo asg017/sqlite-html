@@ -1,6 +1,6 @@
 # API Reference
 
-As a reminder, `sqlite-html` is still young, so breaking changes should be expected.
+As a reminder, `sqlite-html` is still young, so breaking changes should be expected while `sqlite-html` is in a pre-v1 stage.
 
 ## Overview
 
@@ -46,9 +46,12 @@ The `html` column contains the matching element's HTML representation.
 
 The `text` column contains the matching element's textContent representation, similar to the JavaScript DOM API's `.textContent` or the `html_text` function found in this library.
 
-Examples:
-
 ```sql
+sqlite> select * from html_each('<ul>
+<li>Alpha</li>
+<li>Bravo</li>
+<li>Charlie</li>
+<li>Delta</li>', 'li')
 
 ```
 
@@ -57,8 +60,6 @@ Examples:
 `html_extract(document, selector)`
 
 Extracts the first matching element from `document` using the given CSS `selector`, and returns the full HTML representation of that element.
-
-Examples:
 
 ```sql
 sqlite> select html_extract("<p> Hello, <b class=x>world!</b> </p>", "b");
@@ -80,7 +81,9 @@ sqlite> select
 
 #### `html_count`
 
-Examples:
+`html_count(document, selector)`
+
+For the given `document`, count the number of matching elements from `selector` and return that number.
 
 ```sql
 sqlite> select
@@ -90,15 +93,11 @@ sqlite> select
 
 #### `html`
 
-Examples:
-
 ```sql
 sqlite> select
 ```
 
 #### `html_element`
-
-Examples:
 
 ```sql
 sqlite> select
@@ -110,8 +109,6 @@ sqlite> select
 
 Alias: `html_attr_get`
 
-Examples:
-
 ```sql
 sqlite> select
 ```
@@ -119,8 +116,6 @@ sqlite> select
 #### `html_attribute_has`
 
 Alias: `html_attr_has`
-
-Examples:
 
 ```sql
 sqlite> select
@@ -130,15 +125,11 @@ sqlite> select
 
 #### `html_table`
 
-Examples:
-
 ```sql
 sqlite> select
 ```
 
 #### `html_escape`
-
-Examples:
 
 ```sql
 sqlite> select
@@ -146,15 +137,11 @@ sqlite> select
 
 #### `html_unescape`
 
-Examples:
-
 ```sql
 sqlite> select
 ```
 
 #### `html_trim`
-
-Examples:
 
 ```sql
 sqlite> select html_trim(" asdf ");

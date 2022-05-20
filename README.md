@@ -18,7 +18,7 @@ TODO
 
 ## Documentation
 
-See [`api.md`](./api.md) for a full API Reference.
+See [`api.md`](./api.md) for a full API reference.
 
 ## Overview
 

@@ -3,31 +3,79 @@ COMMIT=$(shell git rev-parse HEAD)
 VERSION=v0.0.0
 DATE=$(shell date +'%FT%TZ%z')
 
-dist/html0-macos.dylib:  $(shell find . -type f -name '*.go')
-	go build -buildmode=c-shared -tags="shared" \
-	-ldflags '-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.Date=$(DATE)' \
+GO_BUILD_LDFLAGS=-ldflags '-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.Date=$(DATE)' 
+GO_BUILD_CGO_CFLAGS=CGO_CFLAGS=-DSQLITE3_INIT_FN=sqlite3_html_init
+
+ifeq ($(OS),Windows_NT)
+CONFIG_WINDOWS=y
+endif
+
+ifeq ($(shell uname -s),Darwin)
+CONFIG_DARWIN=y
+else
+CONFIG_LINUX=y
+endif
+                                                                                
+ifdef CONFIG_DARWIN
+LOADABLE_EXTENSION=dylib
+endif
+
+ifdef CONFIG_LINUX
+LOADABLE_EXTENSION=so
+endif
+
+
+ifdef CONFIG_WINDOWS
+LOADABLE_EXTENSION=dll
+endif
+
+TARGET_LOADABLE=dist/html0.$(LOADABLE_EXTENSION)
+TARGET_OBJ=dist/html0.o
+TARGET_SQLITE3=dist/sqlite3
+TARGET_PACKAGE=dist/package.zip
+
+loadable: $(TARGET_LOADABLE)
+sqlite3: $(TARGET_SQLITE3)
+package: $(TARGET_PACKAGE)
+all: loadable sqlite3 package
+
+$(TARGET_LOADABLE):  $(shell find . -type f -name '*.go')
+	$(GO_BUILD_CGO_CFLAGS) go build -buildmode=c-shared -tags="shared" \
+	$(GO_BUILD_LDFLAGS) \
 	-o $@ shared.go
 
-dist/html0-linux.so:  $(shell find . -type f -name '*.go')
-	go build -buildmode=c-shared -tags="shared" \
-	-ldflags '-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.Date=$(DATE)' \
+$(TARGET_OBJ):  $(shell find . -type f -name '*.go')
+	$(GO_BUILD_CGO_CFLAGS) CGO_ENABLED=1 go build -buildmode=c-archive \
+	$(GO_BUILD_LDFLAGS) \
 	-o $@ shared.go
 
-dist/html0-windows.dll:  $(shell find . -type f -name '*.go')
-	go build -buildmode=c-shared -tags="shared" \
-	-ldflags '-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.Date=$(DATE)' \
-	-o $@ shared.go
+# framework stuff is needed bc https://github.com/golang/go/issues/42459#issuecomment-896089738
+$(TARGET_SQLITE3): $(TARGET_OBJ) dist/sqlite3-extra.c sqlite/shell.c
+	gcc \
+	-framework CoreFoundation -framework Security \
+	dist/sqlite3-extra.c sqlite/shell.c $(TARGET_OBJ) \
+	-L. -I./ \
+	-DSQLITE_EXTRA_INIT=core_init \
+	-o $@
 
-macos: dist/html0-macos.dylib
+$(TARGET_PACKAGE): $(TARGET_LOADABLE) $(TARGET_OBJ) html.h $(TARGET_SQLITE3)
+	zip --junk-paths $@ $(TARGET_LOADABLE) $(TARGET_OBJ) html.h $(TARGET_SQLITE3)
 
-linux: dist/html0-linux.so
+dist/sqlite3-extra.c: sqlite/sqlite3.c core_init.c
+	cat sqlite/sqlite3.c core_init.c > $@
 
-windows: dist/html0-windows.dll
+clean:
+	rm dist/*
 
 test:
-	 python3 test.py
+	python3 test.py
+
+test-watch:
+	watchexec --clear -w test.py -- make test 
 
 format:
 	gofmt -s -w .
 
-.PHONY: test format linux macos windows 
+.PHONY: all clean \
+	test test-watch format \
+	loadable sqlite3 package

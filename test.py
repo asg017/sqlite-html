@@ -2,7 +2,7 @@ import sqlite3
 import unittest
 import os
 
-EXT_PATH = "dist/html0-{OS}".format(OS=os.environ.get("OS"))
+EXT_PATH = "dist/html0"
 
 db = sqlite3.connect(":memory:")
 
