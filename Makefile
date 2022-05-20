@@ -52,10 +52,11 @@ $(TARGET_OBJ):  $(shell find . -type f -name '*.go')
 	-o $@ shared.go
 
 # I don't think we can include DSQLITE_OMIT_LOAD_EXTENSION - maybe riyaz-ali/sqlite uses it?
+# add back later -DHAVE_READLINE -lreadline -lncurses
 $(TARGET_SQLITE3): $(TARGET_OBJ) dist/sqlite3-extra.c sqlite/shell.c
 	gcc \
 	$(SQLITE3_CFLAGS) \
-	-lm -pthread -DHAVE_READLINE -lreadline -lncurses \
+	-lm -pthread \
 	dist/sqlite3-extra.c sqlite/shell.c $(TARGET_OBJ) \
 	-ldl -L. -I./ \
 	-DSQLITE_EXTRA_INIT=core_init -DSQLITE3_INIT_FN=sqlite3_html_init \
