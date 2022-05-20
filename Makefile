@@ -72,14 +72,18 @@ clean:
 	rm dist/*
 
 test:
-	python3 test.py
+	make test-loadable
+	make test-sqlite3
 
-test-watch:
-	watchexec --clear -w test.py -- make test 
+test-loadable:
+	python3 tests/test-loadable.py
+
+test-sqlite3:
+	python3 tests/test-sqlite3.py
 
 format:
 	gofmt -s -w .
 
-.PHONY: all clean \
-	test test-watch format \
+.PHONY: all clean format \
+	test test-loadable test-sqlite3 \
 	loadable sqlite3 package
