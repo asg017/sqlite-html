@@ -55,9 +55,9 @@ $(TARGET_OBJ):  $(shell find . -type f -name '*.go')
 $(TARGET_SQLITE3): $(TARGET_OBJ) dist/sqlite3-extra.c sqlite/shell.c
 	gcc \
 	$(SQLITE3_CFLAGS) \
-	-ldl -lm -pthread -DHAVE_READLINE -lreadline -lncurses \
+	-lm -pthread -DHAVE_READLINE -lreadline -lncurses \
 	dist/sqlite3-extra.c sqlite/shell.c $(TARGET_OBJ) \
-	-L. -I./ \
+	-ldl -L. -I./ \
 	-DSQLITE_EXTRA_INIT=core_init -DSQLITE3_INIT_FN=sqlite3_html_init \
 	-o $@
 
