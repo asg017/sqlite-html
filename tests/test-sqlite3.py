@@ -22,7 +22,7 @@ class TestSqliteLinesCli(unittest.TestCase):
     self.assertEqual(run_sqlite3('select 1;').stdout,  '1\n')
     self.assertEqual(
       run_sqlite3(['select name from pragma_function_list where name like "html%" order by 1']).stdout,  
-      "html\nhtml_attr_get\nhtml_attr_has\nhtml_attribute_get\nhtml_attribute_has\nhtml_count\nhtml_debug\nhtml_element\nhtml_escape\nhtml_extract\nhtml_table\nhtml_text\nhtml_trim\nhtml_unescape\nhtml_version\n"
+      "html\nhtml_attr_get\nhtml_attr_has\nhtml_attribute_get\nhtml_attribute_has\nhtml_count\nhtml_debug\nhtml_element\nhtml_escape\nhtml_extract\nhtml_table\nhtml_text\nhtml_trim\nhtml_unescape\nhtml_valid\nhtml_version\n"
     )
     self.assertEqual(
       run_sqlite3(['select name from pragma_module_list where name like "html_%" order by 1']).stdout,  

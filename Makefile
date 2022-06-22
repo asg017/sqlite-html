@@ -81,7 +81,7 @@ test-loadable: loadable
 test-loadable-watch: $(TARGET_LOADABLE)
 	watchexec -w . -w $(TARGET_LOADABLE) -w tests/test-loadable.py --clear -- make test-loadable
 
-test-sqlite3:
+test-sqlite3: sqlite3
 	python3 tests/test-sqlite3.py
 
 format:
