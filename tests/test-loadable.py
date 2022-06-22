@@ -1,48 +1,59 @@
 import sqlite3
 import unittest
-import os
 
 EXT_PATH = "dist/html0"
 
-db = sqlite3.connect(":memory:")
+FUNCTIONS = [
+    "html",
+    "html_attr_get",
+    "html_attr_has",
+    "html_attribute_get",
+    "html_attribute_has",
+    "html_count",
+    "html_debug",
+    "html_element",
+    "html_escape",
+    "html_extract",
+    "html_table",
+    "html_text",
+    "html_trim",
+    "html_unescape",
+    "html_version",
+  ]
+MODULES = [
+  "html_each"
+]
 
-db.execute("create table fbefore as select name from pragma_function_list")
-db.execute("create table mbefore as select name from pragma_module_list")
+ALIASES = ["html_attr_get", "html_attr_has"]
 
-db.enable_load_extension(True)
-db.load_extension(EXT_PATH)
+def connect(ext):
+  db = sqlite3.connect(":memory:")
 
-db.execute("create temp table fafter as select name from pragma_function_list")
-db.execute("create temp table mafter as select name from pragma_module_list")
+  db.execute("create table base_functions as select name from pragma_function_list")
+  db.execute("create table base_modules as select name from pragma_module_list")
+
+  db.enable_load_extension(True)
+  db.load_extension(ext)
+
+  db.execute("create temp table loaded_functions as select name from pragma_function_list where name not in (select name from base_functions) order by name")
+  db.execute("create temp table loaded_modules as select name from pragma_module_list where name not in (select name from base_modules) order by name")
+
+  db.row_factory = sqlite3.Row
+  return db
+
+
+db = connect(EXT_PATH)
 
 class TestHtml(unittest.TestCase):
   def test_funcs(self):
-    funcs = list(map(lambda a: a[0], db.execute("select name from fafter where name not in (select name from fbefore) order by name").fetchall()))
-    self.assertEqual(funcs, [
-      "html",
-      "html_attr_get",
-      "html_attr_has",
-      "html_attribute_get",
-      "html_attribute_has",
-      "html_count",
-      "html_debug",
-      "html_element",
-      "html_escape",
-      "html_extract",
-      "html_table",
-      "html_text",
-      "html_trim",
-      "html_unescape",
-      "html_version",
-    ])
+    funcs = list(map(lambda a: a[0], db.execute("select name from loaded_functions").fetchall()))
+    self.assertEqual(funcs, FUNCTIONS)
   
   def test_modules(self):
-    funcs = list(map(lambda a: a[0], db.execute("select name from mafter where name not in (select name from mbefore) order by name").fetchall()))
-    self.assertEqual(funcs, [
-      "html_each",
-    ])
+    funcs = list(map(lambda a: a[0], db.execute("select name from loaded_modules").fetchall()))
+    self.assertEqual(funcs, MODULES)
 
-  def test_http_version(self):
+  def test_html_version(self):
     v, = db.execute("select html_version()").fetchone()
     self.assertEqual(v, "v0.0.0")
   
@@ -171,6 +182,14 @@ class TestHtml(unittest.TestCase):
     self.assertEqual(rows[2][0], 2)
     self.assertEqual(rows[2][1], "<p>c1<span>c2</span></p>")
     self.assertEqual(rows[2][2], "c1c2")
+
+class TestCoverage(unittest.TestCase):                                      
+  def test_coverage(self):                                                      
+    test_methods = [method for method in dir(TestHtml) if method.startswith('test_html')]
+    funcs_with_tests = set([x.replace("test_", "") for x in test_methods])
+    for func in FUNCTIONS:
+      if func in ALIASES: continue
+      self.assertTrue(func in funcs_with_tests, f"{func} does not have cooresponding test in {funcs_with_tests}")
 
 if __name__ == '__main__':
     unittest.main()

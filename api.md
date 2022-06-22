@@ -30,7 +30,7 @@ As a reminder, `sqlite-html` is still young, so breaking changes should be expec
 
 #### `html_each`
 
-`html_each` is a [table-valued function](https://www.sqlite.org/vtab.html#tabfunc2) that creates a table with the following schema:
+A [table function](https://www.sqlite.org/vtab.html#tabfunc2) with the following schema:
 
 ```sql
 CREATE TABLE html_each(
@@ -44,7 +44,7 @@ The `i` column contains the index (starts at 0) of the matching element.
 
 The `html` column contains the matching element's HTML representation.
 
-The `text` column contains the matching element's textContent representation, similar to the JavaScript DOM API's `.textContent` or the `html_text` function found in this library.
+The `text` column contains the matching element's textContent representation, similar to the JavaScript DOM API's `.textContent` or the `html_text` function in this library.
 
 ```sql
 sqlite> select * from html_each('<ul>
