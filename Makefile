@@ -59,7 +59,8 @@ $(TARGET_SQLITE3): $(TARGET_OBJ) dist/sqlite3-extra.c sqlite/shell.c
 	-lm -pthread \
 	dist/sqlite3-extra.c sqlite/shell.c $(TARGET_OBJ) \
 	-L. -I./sqlite \
-	-DSQLITE_EXTRA_INIT=core_init -DSQLITE3_INIT_FN=sqlite3_html_init -DSQLITE_THREADSAFE=0 \
+	-DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION=1 \
+	-DSQLITE_EXTRA_INIT=core_init -DSQLITE3_INIT_FN=sqlite3_html_init \
 	-o $@
 
 $(TARGET_PACKAGE): $(TARGET_LOADABLE) $(TARGET_OBJ) sqlite/sqlite-html.h $(TARGET_SQLITE3)
