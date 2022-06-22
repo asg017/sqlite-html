@@ -19,11 +19,10 @@ endif
 # framework stuff is needed bc https://github.com/golang/go/issues/42459#issuecomment-896089738                                                                           
 ifdef CONFIG_DARWIN
 LOADABLE_EXTENSION=dylib
-SQLITE3_CFLAGS=-ldl -framework CoreFoundation -framework Security
+SQLITE3_CFLAGS=-framework CoreFoundation -framework Security
 endif
 
 ifdef CONFIG_LINUX
-SQLITE3_CFLAGS=-ldl
 LOADABLE_EXTENSION=so
 endif
 
@@ -60,7 +59,7 @@ $(TARGET_SQLITE3): $(TARGET_OBJ) dist/sqlite3-extra.c sqlite/shell.c
 	-lm -pthread \
 	dist/sqlite3-extra.c sqlite/shell.c $(TARGET_OBJ) \
 	-L. -I./sqlite \
-	-DSQLITE_EXTRA_INIT=core_init -DSQLITE3_INIT_FN=sqlite3_html_init \
+	-DSQLITE_EXTRA_INIT=core_init -DSQLITE3_INIT_FN=sqlite3_html_init -DSQLITE_THREADSAFE=0 \
 	-o $@
 
 $(TARGET_PACKAGE): $(TARGET_LOADABLE) $(TARGET_OBJ) sqlite/sqlite-html.h $(TARGET_SQLITE3)
