@@ -1,4 +1,4 @@
-package query
+package main
 
 import (
 	"io"
@@ -158,4 +158,21 @@ func HtmlEachIterator(constraints []*vtab.Constraint, order []*sqlite.OrderBy) (
 		document: doc,
 		children: children,
 	}, nil
+}
+
+func RegisterQuery(api *sqlite.ExtensionApi) error {
+	var err error
+	if err = api.CreateFunction("html_extract", &HtmlExtractFunc{}); err != nil {
+		return err
+	}
+	if err = api.CreateFunction("html_text", &HtmlTextFunc{}); err != nil {
+		return err
+	}
+	if err = api.CreateFunction("html_count", &HtmlCountFunc{}); err != nil {
+		return err
+	}
+	if err = api.CreateModule("html_each", vtab.NewTableFunc("html_each", HtmlEachColumns, HtmlEachIterator)); err != nil {
+		return err
+	}
+	return nil
 }

@@ -1,4 +1,4 @@
-package elements
+package main
 
 import (
 	"bytes"
@@ -57,14 +57,15 @@ func (*HtmlFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
 	c.ResultSubType(HTML_SUBTYPE)
 }
 
-// html_element(tag, attributes, child1, ...)
-// Create an HTML element with the given tag, attributes, and children.
-// Modeled after React.createElement https://reactjs.org/docs/react-without-jsx.html
-// "tag" is the required top-level tag for the returned root element.
-// "attributes" should be a json object with string keys/values, for the attributes of the element.
-// "children" are either strings or html elements.
-// If 'children" is a string, then it will be rendered as a TextNode in the top-level element
-// If 'children" is an html element, from "html()" or "html_element()" then it will be rendered as a RawNode in the top-level element
+/** 	html_element(tag, attributes, child1, ...)
+ * Create an HTML element with the given tag, attributes, and children.
+ * Modeled after React.createElement https://reactjs.org/docs/react-without-jsx.html
+ * @param tag {text} - required top-level tag name for the returned root element.
+ * @param attributes {json} - should be a json object with string keys/values, for the attributes of the element.
+ * @param children {text | html} - are either strings or html elements.
+ * 	If 'children" is a string, then it will be rendered as a TextNode in the top-level element
+ * 	If 'children" is an html element, from "html()" or "html_element()" then it will be rendered as a RawNode in the top-level element
+ */
 type HtmlElementFunc struct{}
 
 func (*HtmlElementFunc) Deterministic() bool { return true }
@@ -125,4 +126,15 @@ func (*HtmlElementFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
 	html.Render(&buf, root)
 	c.ResultText(buf.String())
 	c.ResultSubType(HTML_SUBTYPE)
+}
+
+func RegisterElements(api *sqlite.ExtensionApi) error {
+	var err error
+	if err = api.CreateFunction("html", &HtmlFunc{}); err != nil {
+		return err
+	}
+	if err = api.CreateFunction("html_element", &HtmlElementFunc{}); err != nil {
+		return err
+	}
+	return nil
 }

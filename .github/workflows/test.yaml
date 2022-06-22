@@ -14,8 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       # using actions/setup-go@v1 is the only way to get macos build to work.
-      # otherwise, with v2, would get this cgo error:
-      # cgo-generated-wrappers:13:13: error: redefinition of 'free' as different kind of symbol
+      # otherwise, with v2, would get this cgo error: 'cgo-generated-wrappers:13:13: error: redefinition of 'free' as different kind of symbol'
       - name: Set up Go 1.17
         uses: actions/setup-go@v1
         with:

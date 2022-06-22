@@ -1,4 +1,4 @@
-package attrs
+package main
 
 import (
 	"strings"
@@ -61,4 +61,21 @@ func (*HtmlAttributeHasFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
 		c.ResultInt(1)
 	}
 
+}
+
+func RegisterAttrs(api *sqlite.ExtensionApi) error {
+	var err error
+	if err = api.CreateFunction("html_attribute_get", &HtmlAttributeGetFunc{}); err != nil {
+		return err
+	}
+	if err = api.CreateFunction("html_attr_get", &HtmlAttributeGetFunc{}); err != nil {
+		return err
+	}
+	if err = api.CreateFunction("html_attribute_has", &HtmlAttributeHasFunc{}); err != nil {
+		return err
+	}
+	if err = api.CreateFunction("html_attr_has", &HtmlAttributeHasFunc{}); err != nil {
+		return err
+	}
+	return nil
 }

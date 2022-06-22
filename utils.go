@@ -1,4 +1,4 @@
-package utils
+package main
 
 import (
 	"fmt"
@@ -52,4 +52,21 @@ func (*HtmlTableFunc) Args() int           { return 1 }
 func (*HtmlTableFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
 	s := values[0].Text()
 	c.ResultText(fmt.Sprintf("<table>%s", s))
+}
+
+func RegisterUtils(api *sqlite.ExtensionApi) error {
+	var err error
+	if err = api.CreateFunction("html_table", &HtmlTableFunc{}); err != nil {
+		return err
+	}
+	if err = api.CreateFunction("html_escape", &HtmlEscapeFunc{}); err != nil {
+		return err
+	}
+	if err = api.CreateFunction("html_unescape", &HtmlUnescapeFunc{}); err != nil {
+		return err
+	}
+	if err = api.CreateFunction("html_trim", &HtmlTrimFunc{}); err != nil {
+		return err
+	}
+	return nil
 }

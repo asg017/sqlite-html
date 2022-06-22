@@ -44,12 +44,12 @@ all: loadable sqlite3 package
 $(TARGET_LOADABLE):  $(shell find . -type f -name '*.go')
 	$(GO_BUILD_CGO_CFLAGS) go build -buildmode=c-shared -tags="shared" \
 	$(GO_BUILD_LDFLAGS) \
-	-o $@ shared.go
+	-o $@ .
 
 $(TARGET_OBJ):  $(shell find . -type f -name '*.go')
 	$(GO_BUILD_CGO_CFLAGS) CGO_ENABLED=1 go build -buildmode=c-archive \
 	$(GO_BUILD_LDFLAGS) \
-	-o $@ shared.go
+	-o $@ .
 
 # I don't think we can include DSQLITE_OMIT_LOAD_EXTENSION - maybe riyaz-ali/sqlite uses it?
 # add back later -DHAVE_READLINE -lreadline -lncurses
@@ -58,15 +58,15 @@ $(TARGET_SQLITE3): $(TARGET_OBJ) dist/sqlite3-extra.c sqlite/shell.c
 	$(SQLITE3_CFLAGS) \
 	-lm -pthread \
 	dist/sqlite3-extra.c sqlite/shell.c $(TARGET_OBJ) \
-	-ldl -L. -I./ \
+	-ldl -L. -I./sqlite \
 	-DSQLITE_EXTRA_INIT=core_init -DSQLITE3_INIT_FN=sqlite3_html_init \
 	-o $@
 
-$(TARGET_PACKAGE): $(TARGET_LOADABLE) $(TARGET_OBJ) html.h $(TARGET_SQLITE3)
-	zip --junk-paths $@ $(TARGET_LOADABLE) $(TARGET_OBJ) html.h $(TARGET_SQLITE3)
+$(TARGET_PACKAGE): $(TARGET_LOADABLE) $(TARGET_OBJ) sqlite/sqlite-html.h $(TARGET_SQLITE3)
+	zip --junk-paths $@ $(TARGET_LOADABLE) $(TARGET_OBJ) sqlite/sqlite-html.h $(TARGET_SQLITE3)
 
-dist/sqlite3-extra.c: sqlite/sqlite3.c core_init.c
-	cat sqlite/sqlite3.c core_init.c > $@
+dist/sqlite3-extra.c: sqlite/sqlite3.c sqlite/core_init.c
+	cat sqlite/sqlite3.c sqlite/core_init.c > $@
 
 clean:
 	rm dist/*
