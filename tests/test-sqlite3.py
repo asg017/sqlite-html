@@ -17,7 +17,7 @@ def run_sqlite3(input):
   err = proc.stderr.decode('utf8') if type(proc.stderr) is bytes else None
   return Results(out, err)
 
-class TestSqliteLinesCli(unittest.TestCase):
+class TestSqliteHtmlCli(unittest.TestCase):
   def test_cli_scalar(self):
     self.assertEqual(run_sqlite3('select 1;').stdout,  '1\n')
     self.assertEqual(
