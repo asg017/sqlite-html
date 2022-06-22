@@ -1,0 +1,76 @@
+name: "build"
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build-macos:
+    name: Build for MacOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        env:
+          ENV: CI
+        run: |
+          mkdir -p dist/
+          make -j 4 dist/package.zip
+          make test
+      - name: Upload dist as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: html0-darwin-amd64
+          path: dist
+  build-linux:
+    name: Build for Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        env:
+          ENV: CI
+        run: |
+          mkdir -p dist/
+          make -j 4 dist/package.zip
+          make test
+      - name: Upload dist as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: html0-linux-amd64
+          path: dist
+  build-windows:
+    name: Build for Windows
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        env:
+          ENV: CI
+        run: |
+          mkdir -p dist/
+          make -j 4 dist/package.zip
+          make test
+      - name: Upload dist as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: html0-windows-amd64
+          path: dist
+  release:
+    name: "releases"
+    if: ${{ github.event_name == 'release' }}
+    needs: [build-macos, build-linux, build-windows]
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download workflow artifacts
+        uses: actions/download-artifact@v2
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const script = require('.github/workflows/release.js')
+            await script({github, context})
