@@ -7,8 +7,10 @@ import (
 	"go.riyazali.net/sqlite"
 )
 
-// html_attribute_get(document, selector, name)
-// Get the value of the "name" attribute from the element found in document, using selector
+/**		html_attribute_get(document, selector, name)
+ *		html_attr_get(document, selector, name)
+ *	Get the value of the "name" attribute from the element found in document, using selector
+ **/
 type HtmlAttributeGetFunc struct{}
 
 func (*HtmlAttributeGetFunc) Deterministic() bool { return true }
@@ -35,8 +37,13 @@ func (*HtmlAttributeGetFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
 
 }
 
-// html_attribute_has(document, selector, name)
-// 1 or 0, if the "name" attribute from the element found in document, using selector, exists
+
+/**		html_attribute_has(document, selector, name)
+ *		html_attr_has(document, selector, name)
+ * Returns 1 or 0, if the "name" attribute from the element 
+ * found in document, using selector, exists
+ **/
+// 
 type HtmlAttributeHasFunc struct{}
 
 func (*HtmlAttributeHasFunc) Deterministic() bool { return true }

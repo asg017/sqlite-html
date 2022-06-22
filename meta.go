@@ -7,9 +7,9 @@ import (
 	"go.riyazali.net/sqlite"
 )
 
-// html_version()
-// return the version string of the current sqlite-html module.
-// passed in from top-level Makefile and build args
+/**		html_version()
+ *	Returns the semver version of the current sqlite-html module.
+ **/
 type HtmlVersionFunc struct{}
 
 func (*HtmlVersionFunc) Deterministic() bool { return true }
@@ -18,8 +18,10 @@ func (f *HtmlVersionFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
 	c.ResultText(Version)
 }
 
-// html_debug()
-// Returns more information for the current html module, including build date + comment hash.
+/**		html_debug()
+ *	Returns more information for the current html module, 
+ * 	including build date + commit hash.
+ **/
 type HtmlDebugFunc struct{}
 
 func (*HtmlDebugFunc) Deterministic() bool { return true }

@@ -18,6 +18,7 @@ FUNCTIONS = [
     "html_text",
     "html_trim",
     "html_unescape",
+    "html_valid",
     "html_version",
   ]
 MODULES = [
@@ -148,6 +149,11 @@ class TestHtml(unittest.TestCase):
     self.assertEqual(a, "abc")
     self.assertEqual(b, "abc")
     self.assertEqual(c, None)
+  
+  def test_html_valid(self):
+    html_valid = lambda x: db.execute("select html_valid(?)", [x]).fetchone()[0]
+    self.assertEqual(html_valid("<div>a"), 1)
+    # TODO wtf isn't valid HTML
 
   def test_html_count(self):
     a, b, c = db.execute("""select 
@@ -160,7 +166,7 @@ class TestHtml(unittest.TestCase):
     self.assertEqual(c, 2)
   
   def test_html_each(self):
-    rows = db.execute("""select * 
+    rows = db.execute("""select rowid, * 
     from html_each('<div>
     <p>a</p>
     <p id=x>b</p>
@@ -168,21 +174,12 @@ class TestHtml(unittest.TestCase):
     ', 'p')
     """).fetchall()
 
-    self.assertEqual(len(rows), 3)
-    self.assertEqual(len(rows[0]), 3)
-
-    self.assertEqual(rows[0][0], 0)
-    self.assertEqual(rows[0][1], "<p>a</p>")
-    self.assertEqual(rows[0][2], "a")
-
-    self.assertEqual(rows[1][0], 1)
-    self.assertEqual(rows[1][1], "<p id=\"x\">b</p>")
-    self.assertEqual(rows[1][2], "b")
-
-    self.assertEqual(rows[2][0], 2)
-    self.assertEqual(rows[2][1], "<p>c1<span>c2</span></p>")
-    self.assertEqual(rows[2][2], "c1c2")
-
+    self.assertEqual(list(map(lambda x: dict(x), rows)), [
+      {"rowid":0,"html":"<p>a</p>","text":"a"},
+      {"rowid":1,"html":"<p id=\"x\">b</p>","text":"b"},
+      {"rowid":2,"html":"<p>c1<span>c2</span></p>","text":"c1c2"}
+    ])
+    
 class TestCoverage(unittest.TestCase):                                      
   def test_coverage(self):                                                      
     test_methods = [method for method in dir(TestHtml) if method.startswith('test_html')]

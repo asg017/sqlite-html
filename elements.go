@@ -27,35 +27,34 @@ func subtypeIsJson(v sqlite.Value) bool {
 	return v.SubType() == JSON_SUBTYPE
 }
 
-// html(document)
-// Verifies and "cleans" the given document as HTML.
-// "cleans" meaning quotes for attributes are added etc. (goquery)
-// Also sets the return subtype to the HTML magic number, for
-// use in other funcs like html_element to designate something as "HTML"
-// (perhaps dangerously)
-type HtmlFunc struct{}
+/**		html(document)
+ *	Verifies and "cleans" (quotes attributes) the given document as HTML.
+ *  Also sets the return subtype to the HTML magic number, for
+ *  use in other funcs like html_element to designate something as "HTML"
+ **/
+ type HtmlFunc struct{}
 
-func (*HtmlFunc) Deterministic() bool { return true }
-func (*HtmlFunc) Args() int           { return 1 }
-func (*HtmlFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
-	html := values[0].Text()
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
-
-	if err != nil {
-		c.ResultError(err)
-		return
-	}
-	// goquery seems to wrap with "<html><body>" stuff, so only get original
-	outHtml, err := doc.Find("body").Html()
-
-	if err != nil {
-		c.ResultError(err)
-		return
-	}
-
-	c.ResultText(outHtml)
-	c.ResultSubType(HTML_SUBTYPE)
-}
+ func (*HtmlFunc) Deterministic() bool { return true }
+ func (*HtmlFunc) Args() int           { return 1 }
+ func (*HtmlFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
+	 html := values[0].Text()
+	 doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+ 
+	 if err != nil {
+		 c.ResultError(err)
+		 return
+	 }
+	 // goquery seems to wrap with "<html><body>" stuff, so only get original
+	 outHtml, err := doc.Find("body").Html()
+ 
+	 if err != nil {
+		 c.ResultError(err)
+		 return
+	 }
+ 
+	 c.ResultText(outHtml)
+	 c.ResultSubType(HTML_SUBTYPE)
+ }
 
 /** 	html_element(tag, attributes, child1, ...)
  * Create an HTML element with the given tag, attributes, and children.

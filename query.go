@@ -9,9 +9,12 @@ import (
 	"go.riyazali.net/sqlite"
 )
 
-// html_text(document, selector)
-// Returns the combined text contents of the selected element from document, using selector.
-// Raises an error if document is not proper HTML.
+/** html_text(document, selector)
+ * Returns the combined text contents of the selected element. similar to .innerText
+ * Raises an error if document is not proper HTML.
+ * @param document {text | html} - HTML document to read from.
+ * @param selector {text} - CSS-style selector of which element in document to read.
+ */
 type HtmlTextFunc struct{}
 
 func (*HtmlTextFunc) Deterministic() bool { return true }
@@ -29,9 +32,12 @@ func (*HtmlTextFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
 	c.ResultText(doc.FindMatcher(goquery.Single(selector)).Text())
 }
 
-// html_extract(document, selector)
-// Returns the entire HTML representation of the selected element from document, using selector.
-// Raises an error if document is not proper HTML.
+/** html_extract(document, selector)
+ * Returns the entire HTML representation of the selected element from document, using selector.
+ * Raises an error if document is not proper HTML.
+ * @param document {text | html} - HTML document to read from.
+ * @param selector {text} - CSS-style selector of which element in document to read.
+ */
 type HtmlExtractFunc struct{}
 
 func (*HtmlExtractFunc) Deterministic() bool { return true }
@@ -56,9 +62,12 @@ func (*HtmlExtractFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
 	c.ResultText(sub)
 }
 
-// html_count(document, selector)
-// Count the number of matching selected elements in the given document.
-// Raises an error if document is not proper HTML.
+/** html_count(document, selector)
+ * Count the number of matching selected elements in the given document.
+ * Raises an error if document is not proper HTML.
+ * @param document {text | html} - HTML document to read from.
+ * @param selector {text} - CSS-style selector of which element in document to read.
+ */
 type HtmlCountFunc struct{}
 
 func (*HtmlCountFunc) Deterministic() bool { return true }
@@ -79,10 +88,21 @@ func (*HtmlCountFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
 	c.ResultInt(count)
 }
 
-// html_each(document, selector)
-// A table value function returned a row for every matching element inside document using selector.
-// Raises an error if document is not proper HTML.
-type HtmlEachCursor struct {
+/** html_each(document, selector)
+ * A table value function returned a row for every matching element inside document using selector.
+ * Raises an error if document is not proper HTML.
+ * @param document {text | html} - HTML document to read from.
+ * @param selector {text} - CSS-style selector of which element in document to read.
+ */
+ var HtmlEachColumns = []vtab.Column{
+	{Name: "document", Type: sqlite.SQLITE_TEXT.String(), NotNull: true, Hidden: true, Filters: []*vtab.ColumnFilter{{Op: sqlite.INDEX_CONSTRAINT_EQ, Required: true, OmitCheck: true}}},
+	{Name: "selector", Type: sqlite.SQLITE_TEXT.String(), NotNull: true, Hidden: true, Filters: []*vtab.ColumnFilter{{Op: sqlite.INDEX_CONSTRAINT_EQ, Required: true, OmitCheck: true}}},
+
+	{Name: "html", Type: sqlite.SQLITE_TEXT.String()},
+	{Name: "text", Type: sqlite.SQLITE_TEXT.String()},
+}
+
+ type HtmlEachCursor struct {
 	current int
 
 	document *goquery.Document
@@ -98,8 +118,6 @@ func (cur *HtmlEachCursor) Column(ctx *sqlite.Context, c int) error {
 	case "selector":
 		ctx.ResultText("")
 
-	case "i":
-		ctx.ResultInt(cur.current)
 	case "html":
 		html, err := goquery.OuterHtml(cur.children.Eq(cur.current))
 		if err != nil {
@@ -119,15 +137,6 @@ func (cur *HtmlEachCursor) Next() (vtab.Row, error) {
 		return nil, io.EOF
 	}
 	return cur, nil
-}
-
-var HtmlEachColumns = []vtab.Column{
-	{Name: "document", Type: sqlite.SQLITE_TEXT.String(), NotNull: true, Hidden: true, Filters: []*vtab.ColumnFilter{{Op: sqlite.INDEX_CONSTRAINT_EQ, Required: true, OmitCheck: true}}},
-	{Name: "selector", Type: sqlite.SQLITE_TEXT.String(), NotNull: true, Hidden: true, Filters: []*vtab.ColumnFilter{{Op: sqlite.INDEX_CONSTRAINT_EQ, Required: true, OmitCheck: true}}},
-
-	{Name: "i", Type: sqlite.SQLITE_INTEGER.String()},
-	{Name: "html", Type: sqlite.SQLITE_TEXT.String()},
-	{Name: "text", Type: sqlite.SQLITE_TEXT.String()},
 }
 
 func HtmlEachIterator(constraints []*vtab.Constraint, order []*sqlite.OrderBy) (vtab.Iterator, error) {

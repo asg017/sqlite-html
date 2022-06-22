@@ -16,7 +16,6 @@ func Register(api *sqlite.ExtensionApi) (sqlite.ErrorCode, error) {
 	if err := RegisterMeta(api); err != nil {
 		return sqlite.SQLITE_ERROR, err
 	}
-
 	if err := RegisterAttrs(api); err != nil {
 		return sqlite.SQLITE_ERROR, err
 	}

@@ -75,8 +75,11 @@ test:
 	make test-loadable
 	make test-sqlite3
 
-test-loadable:
+test-loadable: loadable
 	python3 tests/test-loadable.py
+
+test-loadable-watch: $(TARGET_LOADABLE)
+	watchexec -w . -w $(TARGET_LOADABLE) -w tests/test-loadable.py --clear -- make test-loadable
 
 test-sqlite3:
 	python3 tests/test-sqlite3.py
