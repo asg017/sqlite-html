@@ -127,12 +127,106 @@ func (*HtmlElementFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
 	c.ResultSubType(HTML_SUBTYPE)
 }
 
+type HtmlGroupElementFunc struct{
+	parent string
+}
+
+func (h *HtmlGroupElementFunc) Args() int           { return -1 }
+func (h *HtmlGroupElementFunc) Deterministic() bool { return true }
+
+type HtmlGroupElementContext struct {
+	root *html.Node
+}
+
+func (s *HtmlGroupElementFunc) Step(ctx *sqlite.AggregateContext, values ...sqlite.Value) {
+	if len(values) < 1 {
+		ctx.ResultError(errors.New("html_element requires tag"))
+	}
+	
+	if ctx.Data() == nil {
+		root := &html.Node{
+			Type: html.ElementNode,
+			Data: s.parent,
+			Attr: nil,
+		}
+		ctx.SetData(&HtmlGroupElementContext{root:root,})
+	}
+
+	var gCtx = ctx.Data().(*HtmlGroupElementContext)
+	var children []sqlite.Value
+
+	if len(values) >= 3 {
+		children = values[2:]
+	}
+	var attr []html.Attribute
+
+	if len(values) > 1 && values[1].Type() != sqlite.SQLITE_NULL {
+		rawAttrs := values[1].Text()
+
+		var attrs map[string]string
+		if err := json.Unmarshal([]byte(rawAttrs), &attrs); err != nil {
+			ctx.ResultError(errors.New("attributes is not a JSON object"))
+		}
+
+		for k, v := range attrs {
+			attr = append(attr, html.Attribute{
+				Key: k,
+				Val: v,
+			})
+		}
+
+	}
+
+
+	node := &html.Node{
+		Type: html.ElementNode,
+		Data: values[0].Text(),
+		Attr: attr,
+	}
+	for _, v := range children {
+		var child *html.Node
+		childData := v.Text()
+
+		if subtypeIsHtml(v) {
+			child = &html.Node{
+				Type: html.RawNode,
+				Data: childData,
+			}
+		} else {
+			child = &html.Node{
+				Type: html.TextNode,
+				Data: childData,
+			}
+		}
+		node.AppendChild(child)
+	}
+	gCtx.root.AppendChild(node)
+}
+
+func (s *HtmlGroupElementFunc) Final(ctx *sqlite.AggregateContext) {
+	if ctx.Data() != nil {
+		var buf bytes.Buffer
+		var gCtx = ctx.Data().(*HtmlGroupElementContext)
+		html.Render(&buf, gCtx.root)
+		//gCtx.root.FirstChild.N
+		ctx.ResultText(buf.String())
+		ctx.ResultSubType(HTML_SUBTYPE)
+	}
+}
+
+// select html_group_elements('tr', null, value) from json_each('[1,2,3,4]')
 func RegisterElements(api *sqlite.ExtensionApi) error {
 	var err error
 	if err = api.CreateFunction("html", &HtmlFunc{}); err != nil {
 		return err
 	}
 	if err = api.CreateFunction("html_element", &HtmlElementFunc{}); err != nil {
+		return err
+	}
+	if err = api.CreateFunction("html_group_element_div", &HtmlGroupElementFunc{parent: "div"}); err != nil {
+		return err
+	}
+	if err = api.CreateFunction("html_group_element_span", &HtmlGroupElementFunc{parent: "span"}); err != nil {
 		return err
 	}
 	return nil

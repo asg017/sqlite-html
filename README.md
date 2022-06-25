@@ -12,6 +12,19 @@ This library is experimental and subject to change. I plan to make a stable beta
 
 When v0 is ready (with a mostly stable API), I will make a release (so watch this repo for that) and will make a blog post, feel free to [follow me on twitter](https://twitter.com/agarcia_me) to get notified of that.
 
+## Usage
+
+```sql
+.load ./html0
+select html_extract('<p> Hello, <b>world</b>!</p>', 'b'); -- "world"
+```
+
+`sqlite-html` is similar to other HTML scraping tools like [BeautifulSoup](https://beautiful-soup-4.readthedocs.io/en/latest/) (Python) or [cheerio](https://cheerio.js.org/) (Node.js) or [nokogiri](https://nokogiri.org/) (Ruby). You can use CSS selectors to extract individual elements or groups of elements to query data from HTML sources.
+
+```
+
+```
+
 ## Installing
 
 TODO
@@ -24,7 +37,7 @@ See [`api.md`](./api.md) for a full API reference.
 
 `sqlite-html`'s API is modeled after the official [JSON1](https://www.sqlite.org/json1.html#jmini) SQLite extension.
 
-This extension is also written in Go, thanks to [riyaz-ali/sqlite](https://github.com/riyaz-ali/sqlite). While this library aims to be fast and efficient, it is overall slower than what a pure C SQLite extension could be (mostly because cgo is slow), but in practice you probably won't notice much of a difference.
+This extension is also written in Go, thanks to [riyaz-ali/sqlite](https://github.com/riyaz-ali/sqlite). While this library aims to be fast and efficient, it is overall slower than what a pure C SQLite extension could be, but in practice you probably won't notice much of a difference.
 
 ## See also
 

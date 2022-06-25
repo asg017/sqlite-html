@@ -9,28 +9,33 @@ import (
 	"go.riyazali.net/sqlite"
 )
 
-/** html_text(document, selector)
+/** html_text(document [, selector])
  * Returns the combined text contents of the selected element. similar to .innerText
  * Raises an error if document is not proper HTML.
  * @param document {text | html} - HTML document to read from.
  * @param selector {text} - CSS-style selector of which element in document to read.
  */
-type HtmlTextFunc struct{}
+ type HtmlTextFunc struct{
+	nArgs int
+ }
 
-func (*HtmlTextFunc) Deterministic() bool { return true }
-func (*HtmlTextFunc) Args() int           { return 2 }
-func (*HtmlTextFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
-	html := values[0].Text()
-	selector := values[1].Text()
-
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
-
-	if err != nil {
-		c.ResultError(err)
-		return
-	}
-	c.ResultText(doc.FindMatcher(goquery.Single(selector)).Text())
-}
+ func (*HtmlTextFunc) Deterministic() bool { return true }
+ func (h *HtmlTextFunc) Args() int           { return h.nArgs }
+ func (*HtmlTextFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
+	 html := values[0].Text()
+	 doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+ 
+	 if err != nil {
+		 c.ResultError(err)
+		 return
+	 }
+	 if len(values) > 1 {
+		selector := values[1].Text()
+		c.ResultText(doc.FindMatcher(goquery.Single(selector)).Text())
+	 }else {
+		c.ResultText(doc.Text())
+	 } 
+ }
 
 /** html_extract(document, selector)
  * Returns the entire HTML representation of the selected element from document, using selector.
@@ -174,7 +179,10 @@ func RegisterQuery(api *sqlite.ExtensionApi) error {
 	if err = api.CreateFunction("html_extract", &HtmlExtractFunc{}); err != nil {
 		return err
 	}
-	if err = api.CreateFunction("html_text", &HtmlTextFunc{}); err != nil {
+	if err = api.CreateFunction("html_text", &HtmlTextFunc{nArgs: 1}); err != nil {
+		return err
+	}
+	if err = api.CreateFunction("html_text", &HtmlTextFunc{nArgs: 2}); err != nil {
 		return err
 	}
 	if err = api.CreateFunction("html_count", &HtmlCountFunc{}); err != nil {

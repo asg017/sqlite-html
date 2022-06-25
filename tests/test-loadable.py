@@ -14,7 +14,10 @@ FUNCTIONS = [
     "html_element",
     "html_escape",
     "html_extract",
+    "html_group_element_div",
+    "html_group_element_span",
     "html_table",
+    "html_text",
     "html_text",
     "html_trim",
     "html_unescape",
@@ -143,7 +146,7 @@ class TestHtml(unittest.TestCase):
   def test_html_text(self):
     a, b, c = db.execute("""select 
       html_text('<div> asdfasdf <p a=b>abc</p> asdfasdf </div>', 'p'), 
-      html_text('<p>abc', 'p'), 
+      html_text('<p>abc<p>'), 
       html_text('<p> <b>asdf</b></p>', 'x')
     """).fetchone()
     self.assertEqual(a, "abc")
@@ -154,6 +157,11 @@ class TestHtml(unittest.TestCase):
     html_valid = lambda x: db.execute("select html_valid(?)", [x]).fetchone()[0]
     self.assertEqual(html_valid("<div>a"), 1)
     # TODO wtf isn't valid HTML
+  
+  def test_html_group_element_div(self):
+    self.skipTest("")
+  def test_html_group_element_span(self):
+    self.skipTest("")
 
   def test_html_count(self):
     a, b, c = db.execute("""select 
