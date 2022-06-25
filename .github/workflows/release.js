@@ -26,32 +26,8 @@ module.exports = async ({ github, context }) => {
   }
   await Promise.all([
     uploadReleaseAsset("html0.so", "html0-linux-amd64/html0.so"),
-    uploadReleaseAsset(
-      "html0-linux-amd64-sqlite3",
-      "html0-linux-amd64/sqlite3"
-    ),
-    uploadReleaseAsset(
-      "html0-linux-amd64.zip",
-      "html0-linux-amd64/package.zip"
-    ),
     uploadReleaseAsset("html0.dylib", "html0-darwin-amd64/html0.dylib"),
-    uploadReleaseAsset(
-      "html0-darwin-amd64-sqlite3",
-      "html0-darwin-amd64/sqlite3"
-    ),
-    uploadReleaseAsset(
-      "html0-darwin-amd64.zip",
-      "html0-darwin-amd64/package.zip"
-    ),
     uploadReleaseAsset("html0.dll", "html0-windows-amd64/html0.dll"),
-    uploadReleaseAsset(
-      "html0-windows-amd64-sqlite3",
-      "html0-windows-amd64/sqlite3"
-    ),
-    uploadReleaseAsset(
-      "html0-windows-amd64.zip",
-      "html0-windows-amd64/package.zip"
-    ),
   ]);
 
   return;

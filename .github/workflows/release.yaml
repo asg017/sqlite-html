@@ -16,8 +16,7 @@ jobs:
           ENV: CI
         run: |
           mkdir -p dist/
-          make -j 4 dist/package.zip
-          make test
+          make test-loadable
       - name: Upload dist as artifact
         uses: actions/upload-artifact@v2
         with:
@@ -33,8 +32,7 @@ jobs:
           ENV: CI
         run: |
           mkdir -p dist/
-          make -j 4 dist/package.zip
-          make test
+          make test-loadable
       - name: Upload dist as artifact
         uses: actions/upload-artifact@v2
         with:
@@ -50,8 +48,7 @@ jobs:
           ENV: CI
         run: |
           mkdir -p dist/
-          make -j 4 dist/package.zip
-          make test
+          make test-loadable
       - name: Upload dist as artifact
         uses: actions/upload-artifact@v2
         with:
