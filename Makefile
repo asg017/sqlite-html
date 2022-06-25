@@ -1,6 +1,5 @@
 COMMIT=$(shell git rev-parse HEAD)
-#VERSION=$(shell git describe --tags --exact-match --always)
-VERSION=v0.0.0
+VERSION=$(shell cat VERSION)
 DATE=$(shell date +'%FT%TZ%z')
 
 GO_BUILD_LDFLAGS=-ldflags '-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.Date=$(DATE)' 
