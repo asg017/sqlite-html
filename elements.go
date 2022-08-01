@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -22,10 +23,6 @@ func subtypeIsHtml(value sqlite.Value) bool {
 
 // https://github.com/sqlite/sqlite/blob/8b554e2a1ea4de0cb30a49357684836710f44905/ext/misc/json1.c#L159
 const JSON_SUBTYPE = 74
-
-func subtypeIsJson(v sqlite.Value) bool {
-	return v.SubType() == JSON_SUBTYPE
-}
 
 /**		html(document)
  *	Verifies and "cleans" (quotes attributes) the given document as HTML.
@@ -83,15 +80,24 @@ func (*HtmlElementFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
 	if len(values) > 1 && values[1].Type() != sqlite.SQLITE_NULL {
 		rawAttrs := values[1].Text()
 
-		var attrs map[string]string
+		var attrs map[string]interface{}
 		if err := json.Unmarshal([]byte(rawAttrs), &attrs); err != nil {
 			c.ResultError(errors.New("attributes is not a JSON object"))
 		}
 
 		for k, v := range attrs {
+			var Val string
+			switch t := v.(type) {
+				case string:
+					Val = t
+				case int64:
+					Val = fmt.Sprintf("%d", t)
+				case float64:
+					Val = fmt.Sprintf("%f", t)
+			}
 			attr = append(attr, html.Attribute{
 				Key: k,
-				Val: v,
+				Val: Val,
 			})
 		}
 
@@ -208,13 +214,11 @@ func (s *HtmlGroupElementFunc) Final(ctx *sqlite.AggregateContext) {
 		var buf bytes.Buffer
 		var gCtx = ctx.Data().(*HtmlGroupElementContext)
 		html.Render(&buf, gCtx.root)
-		//gCtx.root.FirstChild.N
 		ctx.ResultText(buf.String())
 		ctx.ResultSubType(HTML_SUBTYPE)
 	}
 }
 
-// select html_group_elements('tr', null, value) from json_each('[1,2,3,4]')
 func RegisterElements(api *sqlite.ExtensionApi) error {
 	var err error
 	if err = api.CreateFunction("html", &HtmlFunc{}); err != nil {

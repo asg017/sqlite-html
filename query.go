@@ -65,6 +65,7 @@ func (*HtmlExtractFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
 	}
 
 	c.ResultText(sub)
+	c.ResultSubType(HTML_SUBTYPE)
 }
 
 /** html_count(document, selector)
@@ -129,6 +130,7 @@ func (cur *HtmlEachCursor) Column(ctx *sqlite.Context, c int) error {
 			ctx.ResultError(err)
 		} else {
 			ctx.ResultText(html)
+			ctx.ResultSubType(HTML_SUBTYPE)
 		}
 	case "text":
 		ctx.ResultText(cur.children.Eq(cur.current).Text())
