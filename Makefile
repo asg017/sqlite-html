@@ -5,12 +5,11 @@ DATE=$(shell date +'%FT%TZ%z')
 GO_BUILD_LDFLAGS=-ldflags '-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.Date=$(DATE)' 
 GO_BUILD_CGO_CFLAGS=CGO_CFLAGS=-DSQLITE3_INIT_FN=sqlite3_html_init
 
-ifeq ($(OS),Windows_NT)
-CONFIG_WINDOWS=y
-endif
 
 ifeq ($(shell uname -s),Darwin)
 CONFIG_DARWIN=y
+else ifeq ($(OS),Windows_NT)
+CONFIG_WINDOWS=y
 else
 CONFIG_LINUX=y
 endif
