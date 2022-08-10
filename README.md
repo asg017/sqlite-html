@@ -14,7 +14,7 @@ This extension is written in Go, thanks to [riyaz-ali/sqlite](https://github.com
 
 ```sql
 .load ./html0
-select html_extract('<p> Anakin <b>Skywalker</b> </p>', b);
+select html_extract('<p> Anakin <b>Skywalker</b> </p>', 'b');
 -- "<b>Skywalker</b>"
 ```
 
