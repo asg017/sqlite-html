@@ -52,7 +52,7 @@ See [`docs.md`](./docs.md) for a full API reference.
 
 ## Installing
 
-The [Releases page](https://github.com/asg017/sqlite-lines/releases) contains pre-built binaries for Linux amd64, MacOS amd64 (no arm), and Windows.
+The [Releases page](https://github.com/asg017/sqlite-html/releases) contains pre-built binaries for Linux amd64, MacOS amd64 (no arm), and Windows.
 
 ### As a loadable extension
 
@@ -89,7 +89,7 @@ Or in Node.js using [better-sqlite3](https://github.com/WiseLibs/better-sqlite3)
 const Database = require("better-sqlite3");
 const db = new Database(":memory:");
 
-db.loadExtension("./lines0");
+db.loadExtension("./html0");
 
 console.log(db.prepare("select html_version()").get());
 // { 'html_version()': 'v0.0.1' }
