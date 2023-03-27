@@ -162,7 +162,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: sqlite-html-windows
-          path: dist/html0.DLL
+          path: dist/html0.dll
   build-windows-python:
     runs-on: windows-latest
     needs: [build-windows-extension]
