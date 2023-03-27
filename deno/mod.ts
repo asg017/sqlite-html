@@ -51,7 +51,7 @@ export function getLoadablePath(): string {
 /**
  * Entrypoint name for the sqlite-html extension.
  */
-export const entrypoint = "sqlite3_html_init";
+export const entrypoint = "sqlite3_extension_init";
 
 interface Db {
   // after https://deno.land/x/sqlite3@0.8.0/mod.ts?s=Database#method_loadExtension_0
