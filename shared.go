@@ -8,7 +8,8 @@ import (
 
 // #cgo linux LDFLAGS: -Wl,--unresolved-symbols=ignore-in-object-files
 // #cgo darwin LDFLAGS: -Wl,-undefined,dynamic_lookup
-// #cgo windows LDFLAGS: -Wl,--allow-multiple-definition
+// #cgo windows LDFLAGS: -Wl,--enable-auto-import
+
 import "C"
 
 // Set in Makefile
