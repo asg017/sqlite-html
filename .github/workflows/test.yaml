@@ -202,19 +202,3 @@ jobs:
           path: dist/
       - run: pip install --find-links dist/ sqlite_html
       - run: make test-loadable
-  tmp:
-    runs-on: ubuntu-latest
-    needs:
-      [
-        build-macos-extension,
-        build-linux_x86-extension,
-        build-windows-extension,
-      ]
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
-      - run: find .
-      - run: |
-          ls sqlite-html-linux_x86/html0.so
-          ls sqlite-html-macos/html0.dylib
-          ls sqlite-html-windows/html0.dll
