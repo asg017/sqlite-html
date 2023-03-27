@@ -202,28 +202,15 @@ jobs:
           path: dist/
       - run: pip install --find-links dist/ sqlite_html
       - run: make test-loadable
-
-      #  "Error -1073741819" for some reason, just skip it
-      #- run: make test-python
-
-      # for test-npm also skipping for same "Error -1073741819"
-      #- uses: actions/setup-node@v3
-      #  with:
-      #    cache: "npm"
-      #    cache-dependency-path: npm/sqlite-html/package.json
-      #- run: npm install
-      #  working-directory: npm/sqlite-html
-      #- run: make test-npm
-
-      # for test-deno also skipping for #  "Error -1073741819" lol
-      #- uses: denoland/setup-deno@v1
-      #  with:
-      #    deno-version: v1.30
-      #- name: Cache Deno dependencies
-      #  uses: actions/cache@v3
-      #  with:
-      #    path: ${{ env.DENO_DIR }}
-      #    key: ${{ runner.os }}-${{ hashFiles('deno/deno.lock') }}
-      #- run: make test-deno
-      #  env:
-      #    DENO_SQLITE_HTML_PATH: ${{ github.workspace }}/dist/html0
+  tmp:
+    runs-on: ubuntu-latest
+    needs:
+      [
+        build-macos-extension,
+        build-linux_x86-extension,
+        build-windows-extension,
+      ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+      - run: find .
