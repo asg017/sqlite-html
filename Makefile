@@ -62,8 +62,19 @@ $(TARGET_LOADABLE):  $(shell find . -type f -name '*.go')
 	$(GO_BUILD_LDFLAGS) \
 	-o $@ .
 
-python: $(TARGET_WHEELS) $(TARGET_LOADABLE) $(TARGET_WHEELS) ./scripts/python_generate_package.sh scripts/rename-wheels.py $(shell find python/sqlite_html -type f -name '*.py')
-	./scripts/python_generate_package.sh $(TARGET_LOADABLE) $(INTERMEDIATE_PYPACKAGE_EXTENSION) $(TARGET_WHEELS) $(RENAME_WHEELS_ARGS)
+python: $(TARGET_WHEELS) $(TARGET_LOADABLE) $(TARGET_WHEELS) scripts/rename-wheels.py $(shell find python/sqlite_html -type f -name '*.py')
+	cp $(TARGET_LOADABLE) $(INTERMEDIATE_PYPACKAGE_EXTENSION)
+	rm $(TARGET_WHEELS)/sqlite_html* || true
+	pip3 wheel python/sqlite_html/ -w $(TARGET_WHEELS)
+	python3 scripts/rename-wheels.py $(TARGET_WHEELS) $(RENAME_WHEELS_ARGS)
+	echo "✅ generated python wheel"
+
+python-versions: python/version.py.tmpl
+	VERSION=$(VERSION) envsubst < python/version.py.tmpl > python/sqlite_html/sqlite_html/version.py
+	echo "✅ generated python/sqlite_html/sqlite_html/version.py"
+
+	VERSION=$(VERSION) envsubst < python/version.py.tmpl > python/datasette_sqlite_html/datasette_sqlite_html/version.py
+	echo "✅ generated python/datasette_sqlite_html/datasette_sqlite_html/version.py"
 	
 datasette: $(TARGET_WHEELS) $(shell find python/datasette_sqlite_html -type f -name '*.py')
 	rm $(TARGET_WHEELS)/datasette* || true
@@ -76,6 +87,7 @@ deno: VERSION deno/deno.json.tmpl
 	scripts/deno_generate_package.sh
 
 version:
+	make python-versions
 	make python
 	make npm
 	make deno
@@ -135,6 +147,6 @@ format:
 	gofmt -s -w .
 
 .PHONY: all clean format \
-	python datasette npm deno version \
+	python python-versions datasette npm deno version \
 	test test-loadable test-sqlite3 \
 	loadable sqlite3 package
