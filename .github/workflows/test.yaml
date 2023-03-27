@@ -214,3 +214,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
       - run: find .
+      - run: |
+          ls sqlite-html-linux_x86/html0.so
+          ls sqlite-html-macos/html0.dylib
+          ls sqlite-html-windows/html0.dll
