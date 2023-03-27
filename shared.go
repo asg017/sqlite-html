@@ -40,6 +40,7 @@ func Register(api *sqlite.ExtensionApi) (sqlite.ErrorCode, error) {
 
 func init() {
 	sqlite.RegisterNamed("html", Register)
+	sqlite.Register(Register)
 }
 
 func main() {}
