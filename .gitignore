@@ -1,3 +1,6 @@
 tests/data
 dist/
 .vscode
+*.dylib
+*.so
+*.dll

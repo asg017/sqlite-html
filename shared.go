@@ -4,12 +4,19 @@ import (
 	"go.riyazali.net/sqlite"
 )
 
+// following linker flags are needed to suppress missing symbol warning in intermediate stages
+
+// #cgo linux LDFLAGS: -Wl,--unresolved-symbols=ignore-in-object-files
+// #cgo darwin LDFLAGS: -Wl,-undefined,dynamic_lookup
+import "C"
+
 // Set in Makefile
 var (
 	Commit  string
 	Date    string
 	Version string
 )
+
 
 func Register(api *sqlite.ExtensionApi) (sqlite.ErrorCode, error) {
 
@@ -32,7 +39,7 @@ func Register(api *sqlite.ExtensionApi) (sqlite.ErrorCode, error) {
 }
 
 func init() {
-	sqlite.Register(Register)
+	sqlite.RegisterNamed("html", Register)
 }
 
 func main() {}

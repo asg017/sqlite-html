@@ -101,8 +101,8 @@ func (*HtmlCountFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
  * @param selector {text} - CSS-style selector of which element in document to read.
  */
  var HtmlEachColumns = []vtab.Column{
-	{Name: "document", Type: sqlite.SQLITE_TEXT.String(), NotNull: true, Hidden: true, Filters: []*vtab.ColumnFilter{{Op: sqlite.INDEX_CONSTRAINT_EQ, Required: true, OmitCheck: true}}},
-	{Name: "selector", Type: sqlite.SQLITE_TEXT.String(), NotNull: true, Hidden: true, Filters: []*vtab.ColumnFilter{{Op: sqlite.INDEX_CONSTRAINT_EQ, Required: true, OmitCheck: true}}},
+	{Name: "document", Type: sqlite.SQLITE_TEXT.String(), NotNull: true, Hidden: true, Filters: []*vtab.ColumnFilter{{Op: sqlite.INDEX_CONSTRAINT_EQ, OmitCheck: true}}},
+	{Name: "selector", Type: sqlite.SQLITE_TEXT.String(), NotNull: true, Hidden: true, Filters: []*vtab.ColumnFilter{{Op: sqlite.INDEX_CONSTRAINT_EQ, OmitCheck: true}}},
 
 	{Name: "html", Type: sqlite.SQLITE_TEXT.String()},
 	{Name: "text", Type: sqlite.SQLITE_TEXT.String()},
@@ -115,7 +115,7 @@ func (*HtmlCountFunc) Apply(c *sqlite.Context, values ...sqlite.Value) {
 	children *goquery.Selection
 }
 
-func (cur *HtmlEachCursor) Column(ctx *sqlite.Context, c int) error {
+func (cur *HtmlEachCursor) Column(ctx vtab.Context, c int) error {
 
 	col := HtmlEachColumns[c].Name
 	switch col {

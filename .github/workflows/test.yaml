@@ -1,16 +1,8 @@
 on: [push]
 name: "test"
 jobs:
-  build:
-    name: Testing on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-          # 2022 uses python 3.9, which we need to have json funcs in sqlite for test.py.
-          - os: windows-2022
-          - os: macos-latest
+  build-linux_x86-extension:
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       # using actions/setup-go@v1 is the only way to get macos build to work.
@@ -19,7 +11,88 @@ jobs:
         uses: actions/setup-go@v1
         with:
           go-version: 1.17
-      - name: Build
-        run: |
-          make loadable
-          make test-loadable
+      - run: make loadable
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sqlite-html-linux_x86
+          path: dist/html0.so
+
+  build-linux_x86-python:
+    runs-on: ubuntu-20.04
+    needs: [build-ubuntu-extension]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download workflow artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: sqlite-html-linux_x86
+          path: dist/
+      - uses: actions/setup-python@v3
+      - run: pip install wheel
+      - run: make python
+      - run: make datasette
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sqlite-html-linux_x86-wheels
+          path: dist/wheels/*.whl
+  test-linux_x86:
+    runs-on: ubuntu-20.04
+    needs: [build-linux_x86-extension, build-linux_x86-python]
+    env:
+      DENO_DIR: deno_cache
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: sqlite-html-linux_x86
+          path: dist/
+      - uses: actions/download-artifact@v3
+        with:
+          name: sqlite-html-linux_x86-wheels
+          path: dist/
+      - run: cp dist/html0.so npm/sqlite-html-linux-x64/lib
+      - run: pip3 install --find-links dist/ sqlite_html
+      - run: make test-loadable
+      - run: make test-python
+      # for test-npm
+      - uses: actions/setup-node@v3
+        with:
+          cache: "npm"
+          cache-dependency-path: npm/sqlite-html/package.json
+      - run: npm install
+        working-directory: npm/sqlite-html
+      - run: make test-npm
+      # for test-deno
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.30
+      - name: Cache Deno dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.DENO_DIR }}
+          key: ${{ runner.os }}-${{ hashFiles('deno/deno.lock') }}
+      - run: make test-deno
+        env:
+          DENO_SQLITE_HTML_PATH: ${{ github.workspace }}/dist/debug/html0
+  #build:
+  #  name: Testing on ${{ matrix.os }}
+  #  runs-on: ${{ matrix.os }}
+  #  strategy:
+  #    matrix:
+  #      include:
+  #        - os: ubuntu-latest
+  #        # 2022 uses python 3.9, which we need to have json funcs in sqlite for test.py.
+  #        - os: windows-2022
+  #        - os: macos-latest
+  #  steps:
+  #    - uses: actions/checkout@v2
+  #    # using actions/setup-go@v1 is the only way to get macos build to work.
+  #    # otherwise, with v2, would get this cgo error: 'cgo-generated-wrappers:13:13: error: redefinition of 'free' as different kind of symbol'
+  #    - name: Set up Go 1.17
+  #      uses: actions/setup-go@v1
+  #      with:
+  #        go-version: 1.17
+  #    - name: Build
+  #      run: |
+  #        make loadable
+  #        make test-loadable

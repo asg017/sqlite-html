@@ -1,0 +1,8 @@
+{
+  "name": "sqlite-html",
+  "version": "0.1.1",
+  "github": "https://github.com/asg017/sqlite-html",
+  "tasks": {
+    "test": "deno test --unstable -A test.ts"
+  }
+}

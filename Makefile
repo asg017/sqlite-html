@@ -2,8 +2,9 @@ COMMIT=$(shell git rev-parse HEAD)
 VERSION=$(shell cat VERSION)
 DATE=$(shell date +'%FT%TZ%z')
 
-GO_BUILD_LDFLAGS=-ldflags '-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.Date=$(DATE)' 
-GO_BUILD_CGO_CFLAGS=CGO_CFLAGS=-DSQLITE3_INIT_FN=sqlite3_html_init
+GO_BUILD_LDFLAGS=-ldflags '-X main.Version=v$(VERSION) -X main.Commit=$(COMMIT) -X main.Date=$(DATE)' 
+#GO_BUILD_CGO_CFLAGS=CGO_CFLAGS=-DSQLITE3_INIT_FN=sqlite3_html_init
+GO_BUILD_CGO_CFLAGS=CGO_ENABLED=1 CGO_CFLAGS="-DUSE_LIBSQLITE3"
 
 
 ifeq ($(shell uname -s),Darwin)
@@ -29,20 +30,55 @@ ifdef CONFIG_WINDOWS
 LOADABLE_EXTENSION=dll
 endif
 
-TARGET_LOADABLE=dist/html0.$(LOADABLE_EXTENSION)
-TARGET_OBJ=dist/html0.o
-TARGET_SQLITE3=dist/sqlite3
-TARGET_PACKAGE=dist/package.zip
+ifdef python
+PYTHON=$(python)
+else
+PYTHON=python3
+endif
+
+prefix=dist
+
+TARGET_LOADABLE=$(prefix)/html0.$(LOADABLE_EXTENSION)
+TARGET_OBJ=$(prefix)/html0.o
+TARGET_WHEELS=$(prefix)/wheels
+TARGET_SQLITE3=$(prefix)/sqlite3
+TARGET_PACKAGE=$(prefix)/package.zip
+
+INTERMEDIATE_PYPACKAGE_EXTENSION=python/sqlite_html/sqlite_html/html0.$(LOADABLE_EXTENSION)
 
 loadable: $(TARGET_LOADABLE)
 sqlite3: $(TARGET_SQLITE3)
 package: $(TARGET_PACKAGE)
 all: loadable sqlite3 package
 
+$(prefix):
+	mkdir -p $(prefix)
+
+$(TARGET_WHEELS): $(prefix)
+	mkdir -p $(TARGET_WHEELS)
+
 $(TARGET_LOADABLE):  $(shell find . -type f -name '*.go')
 	$(GO_BUILD_CGO_CFLAGS) go build -buildmode=c-shared -tags="shared" \
 	$(GO_BUILD_LDFLAGS) \
 	-o $@ .
+
+python: $(TARGET_WHEELS) $(TARGET_LOADABLE) $(TARGET_WHEELS) ./scripts/python_generate_package.sh scripts/rename-wheels.py $(shell find python/sqlite_html -type f -name '*.py')
+	./scripts/python_generate_package.sh $(TARGET_LOADABLE) $(INTERMEDIATE_PYPACKAGE_EXTENSION) $(TARGET_WHEELS) $(RENAME_WHEELS_ARGS)
+	
+datasette: $(TARGET_WHEELS) $(shell find python/datasette_sqlite_html -type f -name '*.py')
+	rm $(TARGET_WHEELS)/datasette* || true
+	pip3 wheel python/datasette_sqlite_html/ --no-deps -w $(TARGET_WHEELS)
+
+npm: VERSION npm/platform-package.README.md.tmpl npm/platform-package.package.json.tmpl npm/sqlite-html/package.json.tmpl scripts/npm_generate_platform_packages.sh
+	scripts/npm_generate_platform_packages.sh
+
+deno: VERSION deno/deno.json.tmpl
+	scripts/deno_generate_package.sh
+
+version:
+	make python
+	make npm
+	make deno
 
 $(TARGET_OBJ):  $(shell find . -type f -name '*.go')
 	$(GO_BUILD_CGO_CFLAGS) CGO_ENABLED=1 go build -buildmode=c-archive \
@@ -73,9 +109,21 @@ clean:
 test:
 	make test-loadable
 	make test-sqlite3
+	make test-python
+	make test-npm
+	make test-deno
 
-test-loadable: loadable
-	python3 tests/test-loadable.py
+test-loadable: $(TARGET_LOADABLE)
+	$(PYTHON) tests/test-loadable.py
+
+test-python:
+	$(PYTHON) tests/test-python.py
+
+test-npm:
+	node npm/sqlite-html/test.js
+
+test-deno:
+	deno task --config deno/deno.json test
 
 test-loadable-watch: $(TARGET_LOADABLE)
 	watchexec -w . -w $(TARGET_LOADABLE) -w tests/test-loadable.py --clear -- make test-loadable
@@ -87,5 +135,6 @@ format:
 	gofmt -s -w .
 
 .PHONY: all clean format \
+	python datasette npm deno version \
 	test test-loadable test-sqlite3 \
 	loadable sqlite3 package

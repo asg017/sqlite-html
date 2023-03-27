@@ -59,7 +59,7 @@ class TestHtml(unittest.TestCase):
 
   def test_html_version(self):
     with open("./VERSION") as f:                                                
-      version = f.read()  
+      version = "v" + f.read()  
     v, = db.execute("select html_version()").fetchone()
     self.assertEqual(v, version)
   
