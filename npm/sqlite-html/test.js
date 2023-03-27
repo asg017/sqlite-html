@@ -18,6 +18,7 @@ test("better-sqlite3", (t) => {
   db.loadExtension(getLoadablePath());
   const version = db.prepare("select html_version()").pluck().get();
   assert.strictEqual(version[0], "v");
+  db.close();
 });
 
 test("sqlite3", async (t) => {
@@ -30,4 +31,5 @@ test("sqlite3", async (t) => {
     });
   });
   assert.strictEqual(version[0], "v");
+  db.close();
 });
