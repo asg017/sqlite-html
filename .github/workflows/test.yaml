@@ -19,7 +19,7 @@ jobs:
 
   build-linux_x86-python:
     runs-on: ubuntu-20.04
-    needs: [build-ubuntu-extension]
+    needs: [build-linux_x86-extension]
     steps:
       - uses: actions/checkout@v3
       - name: Download workflow artifacts
