@@ -10,17 +10,17 @@ const extension = {
   description: "",
   platforms: [
     {
-      path: "sqlite-html/sqlite-html-linux_x86/html0.so",
+      path: "sqlite-html-linux_x86/html0.so",
       os: "linux",
       cpu: "x86_64",
     },
     {
-      path: "sqlite-html/sqlite-html-macos/html0.dylib",
+      path: "sqlite-html-macos/html0.dylib",
       os: "darwin",
       cpu: "x86_64",
     },
     {
-      path: "sqlite-html/sqlite-html-windows/html0.dll",
+      path: "sqlite-html-windows/html0.dll",
       os: "windows",
       cpu: "x86_64",
     },

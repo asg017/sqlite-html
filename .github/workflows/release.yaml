@@ -164,9 +164,9 @@ jobs:
       - name: Download workflow artifacts
         uses: actions/download-artifact@v2
       - run: |
-          cp sqlite-html/sqlite-html-linux_x86/html0.so npm/sqlite-html-linux-x64/lib/html0.so
-          cp sqlite-html/sqlite-html-macos/html0.dylib npm/sqlite-html-darwin-x64/lib/html0.dylib
-          cp sqlite-html/sqlite-html-windows/html0.dll npm/sqlite-html-windows-x64/lib/html0.dll
+          cp sqlite-html-linux_x86/html0.so npm/sqlite-html-linux-x64/lib/html0.so
+          cp sqlite-html-macos/html0.dylib npm/sqlite-html-darwin-x64/lib/html0.dylib
+          cp sqlite-html-windows/html0.dll npm/sqlite-html-windows-x64/lib/html0.dll
       - name: Install node
         uses: actions/setup-node@v3
         with:

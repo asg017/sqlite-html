@@ -2,15 +2,15 @@ const fs = require("fs").promises;
 
 const compiled_extensions = [
   {
-    path: "sqlite-html/sqlite-html-macos/html0.dylib",
+    path: "sqlite-html-macos/html0.dylib",
     name: "deno-darwin-x86_64.html0.dylib",
   },
   {
-    path: "sqlite-html/sqlite-html-linux_x86/html0.so",
+    path: "sqlite-html-linux_x86/html0.so",
     name: "deno-linux-x86_64.html0.so",
   },
   {
-    path: "sqlite-html/sqlite-html-windows/html0.dll",
+    path: "sqlite-html-windows/html0.dll",
     name: "deno-windows-x86_64.html0.dll",
   },
 ];
