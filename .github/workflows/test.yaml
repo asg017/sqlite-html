@@ -146,7 +146,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('deno/deno.lock') }}
       - run: make test-deno
         env:
-          DENO_SQLITE_HTML_PATH: ${{ github.workspace }}/dist/html0
+          DENO_SQLITE_HTML_PATH: ${{ github.workspace }}/dist/html0.dylib
   build-windows-extension:
     name: Building windows extension
     runs-on: windows-latest
