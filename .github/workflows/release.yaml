@@ -12,10 +12,10 @@ jobs:
       - uses: actions/checkout@v2
       # using actions/setup-go@v1 is the only way to get macos build to work.
       # otherwise, with v2, would get this cgo error: 'cgo-generated-wrappers:13:13: error: redefinition of 'free' as different kind of symbol'
-      - name: Set up Go 1.17
+      - name: Set up Go 1.20
         uses: actions/setup-go@v1
         with:
-          go-version: 1.17
+          go-version: 1.20
       - run: make loadable
       - uses: actions/upload-artifact@v3
         with:
@@ -46,10 +46,10 @@ jobs:
       - uses: actions/checkout@v2
       # using actions/setup-go@v1 is the only way to get macos build to work.
       # otherwise, with v2, would get this cgo error: 'cgo-generated-wrappers:13:13: error: redefinition of 'free' as different kind of symbol'
-      - name: Set up Go 1.17
+      - name: Set up Go 1.20
         uses: actions/setup-go@v1
         with:
-          go-version: 1.17
+          go-version: 1.20
       - run: make loadable
       - uses: actions/upload-artifact@v3
         with:
@@ -81,10 +81,10 @@ jobs:
       - uses: actions/checkout@v2
       # using actions/setup-go@v1 is the only way to get macos build to work.
       # otherwise, with v2, would get this cgo error: 'cgo-generated-wrappers:13:13: error: redefinition of 'free' as different kind of symbol'
-      - name: Set up Go 1.17
+      - name: Set up Go 1.20
         uses: actions/setup-go@v1
         with:
-          go-version: 1.17
+          go-version: 1.20
       - run: make loadable
       - uses: actions/upload-artifact@v3
         with:
