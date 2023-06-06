@@ -2,7 +2,7 @@ COMMIT=$(shell git rev-parse HEAD)
 VERSION=$(shell cat VERSION)
 DATE=$(shell date +'%FT%TZ%z')
 VENDOR_SQLITE=$(shell pwd)/sqlite
-GO_BUILD_LDFLAGS=-ldflags '-X main.Version=v$(VERSION) -X main.Commit=$(COMMIT) -X main.Date=$(DATE)' 
+GO_BUILD_LDFLAGS=-ldflags '-X main.Version=v$(VERSION) -X main.Commit=$(COMMIT) -X main.Date=$(DATE)'
 #GO_BUILD_CGO_CFLAGS=CGO_CFLAGS=-DSQLITE3_INIT_FN=sqlite3_html_init
 GO_BUILD_CGO_CFLAGS=CGO_ENABLED=1 CGO_CFLAGS="-DUSE_LIBSQLITE3" CPATH="$(VENDOR_SQLITE)"
 
@@ -15,7 +15,7 @@ else
 CONFIG_LINUX=y
 endif
 
-# framework stuff is needed bc https://github.com/golang/go/issues/42459#issuecomment-896089738                                                                           
+# framework stuff is needed bc https://github.com/golang/go/issues/42459#issuecomment-896089738
 ifdef CONFIG_DARWIN
 LOADABLE_EXTENSION=dylib
 SQLITE3_CFLAGS=-framework CoreFoundation -framework Security
@@ -75,7 +75,7 @@ python-versions: python/version.py.tmpl
 
 	VERSION=$(VERSION) envsubst < python/version.py.tmpl > python/datasette_sqlite_html/datasette_sqlite_html/version.py
 	echo "✅ generated python/datasette_sqlite_html/datasette_sqlite_html/version.py"
-	
+
 datasette: $(TARGET_WHEELS) $(shell find python/datasette_sqlite_html -type f -name '*.py')
 	rm $(TARGET_WHEELS)/datasette* || true
 	pip3 wheel python/datasette_sqlite_html/ --no-deps -w $(TARGET_WHEELS)
@@ -86,11 +86,17 @@ npm: VERSION npm/platform-package.README.md.tmpl npm/platform-package.package.js
 deno: VERSION deno/deno.json.tmpl
 	scripts/deno_generate_package.sh
 
+bindings/ruby/lib/version.rb: bindings/ruby/lib/version.rb.tmpl VERSION
+	VERSION=$(VERSION) envsubst < $< > $@
+
+ruby: bindings/ruby/lib/version.rb
+
 version:
 	make python-versions
 	make python
 	make npm
 	make deno
+	make ruby
 
 $(TARGET_OBJ):  $(shell find . -type f -name '*.go')
 	$(GO_BUILD_CGO_CFLAGS) CGO_ENABLED=1 go build -buildmode=c-archive \
@@ -147,6 +153,6 @@ format:
 	gofmt -s -w .
 
 .PHONY: all clean format \
-	python python-versions datasette npm deno version \
+	python python-versions datasette npm deno ruby version \
 	test test-loadable test-sqlite3 \
 	loadable sqlite3 package

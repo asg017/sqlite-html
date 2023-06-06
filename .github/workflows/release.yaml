@@ -212,3 +212,44 @@ jobs:
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
           skip_existing: true
+  upload-gem:
+    needs:
+      [
+        build-macos-extension,
+        build-linux_x86-extension,
+        build-windows-extension,
+      ]
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2
+      - run: |
+          rm bindings/ruby/lib/*.{dylib,so,dll} || true
+          cp sqlite-html-macos/*.dylib bindings/ruby/lib
+          gem -C bindings/ruby build -o x86_64-darwin.gem sqlite_html.gemspec
+        env:
+          PLATFORM: x86_64-darwin
+      - run: |
+          rm bindings/ruby/lib/*.{dylib,so,dll} || true
+          cp sqlite-html-linux_x86/*.so bindings/ruby/lib
+          gem -C bindings/ruby build -o x86_64-linux.gem sqlite_html.gemspec
+        env:
+          PLATFORM: x86_64-linux
+      - run: |
+          rm bindings/ruby/lib/*.{dylib,so,dll} || true
+          cp sqlite-html-windows/*.dll bindings/ruby/lib
+          gem -C bindings/ruby build -o ${{ env.PLATFORM }}.gem sqlite_html.gemspec
+        env:
+          PLATFORM: x64-mingw32
+      - run: |
+          gem push bindings/ruby/x86_64-linux.gem
+          gem push bindings/ruby/x86_64-darwin.gem
+          gem push bindings/ruby/arm64-darwin.gem
+          gem push bindings/ruby/x64-mingw32.gem
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.GEM_HOST_API_KEY }}
