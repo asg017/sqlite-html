@@ -52,6 +52,21 @@ See [`docs.md`](./docs.md) for a full API reference.
 
 ## Installing
 
+| Language       | Install                                                      |                                                                                                                                                                                             |
+| -------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Python         | `pip install sqlite-html`                                    | [![PyPI](https://img.shields.io/pypi/v/sqlite-html.svg?color=blue&logo=python&logoColor=white)](https://pypi.org/project/sqlite-html/)                                                      |
+| Datasette      | `datasette install datasette-sqlite-html`                    | [![Datasette](https://img.shields.io/pypi/v/datasette-sqlite-html.svg?color=B6B6D9&label=Datasette+plugin&logoColor=white&logo=python)](https://datasette.io/plugins/datasette-sqlite-html) |
+| Node.js        | `npm install sqlite-html`                                    | [![npm](https://img.shields.io/npm/v/sqlite-html.svg?color=green&logo=nodedotjs&logoColor=white)](https://www.npmjs.com/package/sqlite-html)                                                |
+| Deno           | [`deno.land/x/sqlite_html`](https://deno.land/x/sqlite_html) | [![deno.land/x release](https://img.shields.io/github/v/release/asg017/sqlite-html?color=fef8d2&include_prereleases&label=deno.land%2Fx&logo=deno)](https://deno.land/x/sqlite_html)        |
+| Ruby           | `gem install sqlite-html`                                    | ![Gem](https://img.shields.io/gem/v/sqlite-html?color=red&logo=rubygems&logoColor=white)                                                                                                    |
+| Github Release |                                                              | ![GitHub tag (latest SemVer pre-release)](https://img.shields.io/github/v/tag/asg017/sqlite-html?color=lightgrey&include_prereleases&label=Github+release&logo=github)                      |
+
+<!--
+| Elixir         | [`hex.pm/packages/sqlite_html`](https://hex.pm/packages/sqlite_html) | [![Hex.pm](https://img.shields.io/hexpm/v/sqlite_html?color=purple&logo=elixir)](https://hex.pm/packages/sqlite_html)                                                                       |
+| Go             | `go get -u github.com/asg017/sqlite-html/bindings/go`               | [![Go Reference](https://pkg.go.dev/badge/github.com/asg017/sqlite-html/bindings/go.svg)](https://pkg.go.dev/github.com/asg017/sqlite-html/bindings/go)                                     |
+| Rust           | `cargo add sqlite-html`                                             | [![Crates.io](https://img.shields.io/crates/v/sqlite-html?logo=rust)](https://crates.io/crates/sqlite-html)                                                                                 |
+-->
+
 The [Releases page](https://github.com/asg017/sqlite-html/releases) contains pre-built binaries for Linux amd64, MacOS amd64 (no arm), and Windows.
 
 ### As a loadable extension
