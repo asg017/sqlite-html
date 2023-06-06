@@ -152,7 +152,10 @@ test-sqlite3: sqlite3
 format:
 	gofmt -s -w .
 
-.PHONY: all clean format \
+publish-release:
+	./scripts/publish_release.sh
+
+.PHONY: all clean format publish-release \
 	python python-versions datasette npm deno ruby version \
 	test test-loadable test-sqlite3 \
 	loadable sqlite3 package
