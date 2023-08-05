@@ -73,6 +73,38 @@ jobs:
         with:
           name: sqlite-html-macos-wheels
           path: dist/wheels/*.whl
+  build-macos-aarch64-extension:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      # using actions/setup-go@v1 is the only way to get macos build to work.
+      # otherwise, with v2, would get this cgo error: 'cgo-generated-wrappers:13:13: error: redefinition of 'free' as different kind of symbol'
+      - name: Set up Go 1.20
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.20
+      - run: GOOS=darwin GOARCH=arm64 CC="gcc -target arm64-apple-macos11" make loadable
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sqlite-html-macos-aarch64
+          path: dist/html0.dylib
+  build-macos-aarch64-python:
+    runs-on: macos-latest
+    needs: [build-macos-aarch64-extension]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download workflow artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: sqlite-html-macos-aarch64
+          path: dist/
+      - uses: actions/setup-python@v3
+      - run: pip install wheel
+      - run: make python IS_MACOS_ARM=1
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sqlite-html-macos-aarch64-wheels
+          path: dist/wheels/*.whl
 
   build-windows-extension:
     name: Building windows extension
@@ -113,6 +145,7 @@ jobs:
     needs:
       [
         build-macos-extension,
+        build-macos-aarch64-extension,
         build-linux_x86-extension,
         build-windows-extension,
       ]
@@ -130,12 +163,14 @@ jobs:
           platforms: |
             linux-x86_64:     sqlite-html-linux_x86/*
             macos-x86_64:     sqlite-html-macos/*
+            macos-aarch64:     sqlite-html-macos-aarch64/*
             windows-x86_64:   sqlite-html-windows/*
   upload-deno:
     name: Upload Deno release assets
     needs:
       [
         build-macos-extension,
+        build-macos-aarch64-extension,
         build-linux_x86-extension,
         build-windows-extension,
       ]
@@ -156,6 +191,7 @@ jobs:
     needs:
       [
         build-macos-extension,
+        build-macos-aarch64-extension,
         build-linux_x86-extension,
         build-windows-extension,
       ]
@@ -167,6 +203,7 @@ jobs:
       - run: |
           cp sqlite-html-linux_x86/html0.so npm/sqlite-html-linux-x64/lib/html0.so
           cp sqlite-html-macos/html0.dylib npm/sqlite-html-darwin-x64/lib/html0.dylib
+          cp sqlite-html-macos-aarch64/html0.dylib npm/sqlite-html-darwin-arm64/lib/html0.dylib
           cp sqlite-html-windows/html0.dll npm/sqlite-html-windows-x64/lib/html0.dll
       - name: Install node
         uses: actions/setup-node@v3
@@ -183,6 +220,11 @@ jobs:
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish NPM sqlite-html-darwin-arm64
+        working-directory: npm/sqlite-html-darwin-arm64
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish NPM sqlite-html-windows-x64
         working-directory: npm/sqlite-html-windows-x64
         run: npm publish --access public
@@ -194,7 +236,13 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
   upload_pypi:
-    needs: [build-linux_x86-python, build-macos-python, build-windows-python]
+    needs:
+      [
+        build-linux_x86-python,
+        build-macos-python,
+        build-macos-aarch64-python,
+        build-windows-python,
+      ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
@@ -209,6 +257,10 @@ jobs:
         with:
           name: sqlite-html-macos-wheels
           path: dist
+      - uses: actions/download-artifact@v3
+        with:
+          name: sqlite-html-macos-aarch64-wheels
+          path: dist
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
@@ -217,6 +269,7 @@ jobs:
     needs:
       [
         build-macos-extension,
+        build-macos-aarch64-extension,
         build-linux_x86-extension,
         build-windows-extension,
       ]
@@ -237,6 +290,12 @@ jobs:
           PLATFORM: x86_64-darwin
       - run: |
           rm bindings/ruby/lib/*.{dylib,so,dll} || true
+          cp sqlite-html-macos-aarch64/*.dylib bindings/ruby/lib
+          gem -C bindings/ruby build -o arm64-darwin.gem sqlite_html.gemspec
+        env:
+          PLATFORM: arm64-darwin
+      - run: |
+          rm bindings/ruby/lib/*.{dylib,so,dll} || true
           cp sqlite-html-linux_x86/*.so bindings/ruby/lib
           gem -C bindings/ruby build -o x86_64-linux.gem sqlite_html.gemspec
         env:
@@ -250,6 +309,7 @@ jobs:
       - run: |
           gem push bindings/ruby/x86_64-linux.gem
           gem push bindings/ruby/x86_64-darwin.gem
+          gem push bindings/ruby/arm64-darwin.gem
           gem push bindings/ruby/x64-mingw32.gem
         env:
           GEM_HOST_API_KEY: ${{ secrets.GEM_HOST_API_KEY }}
