@@ -34,7 +34,6 @@ jobs:
       - uses: actions/setup-python@v3
       - run: pip install wheel
       - run: make python
-      - run: make datasette
       - uses: actions/upload-artifact@v3
         with:
           name: sqlite-html-linux_x86-wheels
@@ -68,7 +67,6 @@ jobs:
       - uses: actions/setup-python@v3
       - run: pip install wheel
       - run: make python
-      - run: make datasette
       - uses: actions/upload-artifact@v3
         with:
           name: sqlite-html-macos-wheels
@@ -135,10 +133,20 @@ jobs:
       - uses: actions/setup-python@v3
       - run: pip install wheel
       - run: make python
-      - run: make datasette
       - uses: actions/upload-artifact@v3
         with:
           name: sqlite-html-windows-wheels
+          path: dist/wheels/*.whl
+  build-datasette-sqlite-utils:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+      - run: pip install wheel build
+      - run: make datasette sqlite-utils
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sqlite-html-datasette-sqlite-utils-wheels
           path: dist/wheels/*.whl
   upload-extensions:
     name: Upload release assets
@@ -235,13 +243,14 @@ jobs:
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-  upload_pypi:
+  upload-pypi:
     needs:
       [
         build-linux_x86-python,
         build-macos-python,
         build-macos-aarch64-python,
         build-windows-python,
+        build-datasette-sqlite-utils,
       ]
     runs-on: ubuntu-latest
     steps:
@@ -260,6 +269,10 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: sqlite-html-macos-aarch64-wheels
+          path: dist
+      - uses: actions/download-artifact@v3
+        with:
+          name: sqlite-html-datasette-sqlite-utils-wheels
           path: dist
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
